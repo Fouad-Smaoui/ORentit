@@ -63,16 +63,19 @@ export const uploadImage = async (file: File): Promise<string> => {
       throw new Error('Only image files are allowed');
     }
 
-    // Create a unique file name
+    // Create a unique file name with timestamp and random string
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileName = `${timestamp}-${randomString}.${fileExt}`;
+    const filePath = `items/${fileName}`;
 
     // Upload the file to Supabase Storage
     const { error: uploadError, data } = await supabase.storage
-      .from('items')
-      .upload(fileName, file, {
+      .from('public')
+      .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: true,
+        upsert: false, // Don't overwrite existing files
         contentType: file.type
       });
 
@@ -87,7 +90,7 @@ export const uploadImage = async (file: File): Promise<string> => {
 
     // Get the public URL
     const { data: { publicUrl } } = supabase.storage
-      .from('items')
+      .from('public')
       .getPublicUrl(data.path);
 
     if (!publicUrl) {

@@ -53,7 +53,7 @@ interface Item {
   category: string;
   price_per_day: number;
   location: string;
-  photos: string[];
+  image_url: string;
   owner_id: string;
   created_at: string;
   profiles: Profile;
@@ -179,7 +179,7 @@ export function ItemsPage() {
             category,
             price_per_day,
             location,
-            photos,
+            image_url,
             owner_id,
             created_at,
             profiles (
@@ -195,9 +195,8 @@ export function ItemsPage() {
           firstItem: data?.[0] ? {
             id: data[0].id,
             name: data[0].name,
-            hasPhotos: Array.isArray(data[0].photos),
-            photoCount: Array.isArray(data[0].photos) ? data[0].photos.length : 0,
-            hasProfile: !!data[0].profiles
+            hasImageUrl: !!data[0].image_url,
+            image_url: data[0].image_url
           } : null,
           error: error?.message
         });
@@ -218,7 +217,7 @@ export function ItemsPage() {
               category,
               price_per_day,
               location,
-              photos,
+              image_url,
               owner_id,
               created_at,
               profiles (
@@ -234,11 +233,10 @@ export function ItemsPage() {
               console.log('🔄 Processing item:', {
                 id: item.id,
                 name: item.name,
-                photosType: typeof item.photos,
+                image_urlType: typeof item.image_url,
                 profilesType: typeof item.profiles
               });
 
-              const photos = Array.isArray(item.photos) ? item.photos : [];
               const profile: Profile = {
                 username: item.profiles?.username ?? 'Unknown User',
                 avatar_url: item.profiles?.avatar_url ?? null
@@ -246,7 +244,6 @@ export function ItemsPage() {
 
               return {
                 ...item,
-                photos,
                 profiles: profile
               } as Item;
             });
@@ -260,11 +257,10 @@ export function ItemsPage() {
           console.log('🔄 Processing item:', {
             id: item.id,
             name: item.name,
-            photosType: typeof item.photos,
+            image_urlType: typeof item.image_url,
             profilesType: typeof item.profiles
           });
 
-          const photos = Array.isArray(item.photos) ? item.photos : [];
           const profile: Profile = {
             username: item.profiles?.username ?? 'Unknown User',
             avatar_url: item.profiles?.avatar_url ?? null
@@ -272,7 +268,6 @@ export function ItemsPage() {
 
           return {
             ...item,
-            photos,
             profiles: profile
           } as Item;
         });
@@ -282,7 +277,7 @@ export function ItemsPage() {
           sample: typedData.slice(0, 1).map(item => ({
             id: item.id,
             name: item.name,
-            photoCount: item.photos.length,
+            image_url: item.image_url,
             username: item.profiles.username
           }))
         });

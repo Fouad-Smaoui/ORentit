@@ -1,17 +1,29 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, LogIn, LogOut, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSignOut = async () => {
+  const handleSignOut = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isSigningOut) return;
+    
     try {
+      setIsSigningOut(true);
       await signOut();
+      // Force reload after a short delay to ensure state is cleared
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error) {
       console.error('Error signing out:', error);
+      alert('Failed to sign out. Please try again.');
+      setIsSigningOut(false);
     }
   };
 
@@ -49,10 +61,15 @@ const Navbar = () => {
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="bg-primary-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-600 flex items-center gap-2"
+                  disabled={isSigningOut}
+                  className="bg-primary-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <LogOut size={18} />
-                  Sign Out
+                  {isSigningOut ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    <LogOut size={18} />
+                  )}
+                  {isSigningOut ? 'Signing Out...' : 'Sign Out'}
                 </button>
               </>
             ) : (
@@ -104,10 +121,15 @@ const Navbar = () => {
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="w-full text-left bg-primary-500 text-white px-3 py-2 rounded-md text-base font-medium hover:bg-primary-600 flex items-center gap-2"
+                  disabled={isSigningOut}
+                  className="w-full text-left bg-primary-500 text-white px-3 py-2 rounded-md text-base font-medium hover:bg-primary-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <LogOut size={18} />
-                  Sign Out
+                  {isSigningOut ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    <LogOut size={18} />
+                  )}
+                  {isSigningOut ? 'Signing Out...' : 'Sign Out'}
                 </button>
               </>
             ) : (

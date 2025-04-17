@@ -18,94 +18,57 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const testItems = [
   // Vehicles
   {
-    title: 'Tesla Model 3',
+    name: 'Electric Scooter',
     category: 'vehicles',
-    description: 'Electric car in perfect condition. Features autopilot, premium interior, and long-range battery.',
-    price_per_day: 150.00,
-    location: 'New York, NY',
-    image_url: 'https://images.unsplash.com/photo-1561580125-028ee3bd62eb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    description: 'Eco-friendly electric scooter with 30km range',
+    price_per_day: 20.00,
+    location: 'Lille, France',
+    image_url: 'https://images.unsplash.com/photo-1604868189538-68474ba5c224?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
     status: 'available'
   },
   {
-    title: 'Mountain Bike',
-    category: 'vehicles',
-    description: 'Professional mountain bike, barely used. Perfect for trail riding and adventures.',
-    price_per_day: 35.00,
-    location: 'Los Angeles, CA',
-    image_url: 'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1548&q=80',
+    name: 'DJ Equipment',
+    category: 'electronics',
+    description: 'Complete DJ setup with mixer and speakers',
+    price_per_day: 60.00,
+    location: 'Strasbourg, France',
+    image_url: 'https://images.unsplash.com/photo-1571935441005-07c3d3d56dcd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
     status: 'available'
   },
   {
-    title: 'Electric Scooter',
-    category: 'vehicles',
-    description: 'Portable electric scooter with 20km range. Perfect for city commuting.',
-    price_per_day: 25.00,
-    location: 'Chicago, IL',
-    image_url: 'https://images.unsplash.com/photo-1604868189265-c6de9e333e36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-    status: 'available'
-  },
-  {
-    title: 'Kayak',
-    category: 'vehicles',
-    description: 'Two-person kayak with paddles. Great for lake or river adventures.',
-    price_per_day: 45.00,
-    location: 'Seattle, WA',
-    image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-    status: 'available'
-  },
-  {
-    title: 'Vintage Motorcycle',
-    category: 'vehicles',
-    description: 'Classic 1970s motorcycle, fully restored. A true head-turner.',
-    price_per_day: 120.00,
-    location: 'Austin, TX',
-    image_url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-    status: 'available'
-  },
-  // Leisure
-  {
-    title: 'Camping Tent',
-    category: 'leisure',
-    description: '4-person tent, waterproof and easy to set up. Perfect for family camping.',
+    name: 'Power Tools Set',
+    category: 'tools',
+    description: 'Complete set of power tools for home improvement',
     price_per_day: 30.00,
-    location: 'Denver, CO',
-    image_url: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    location: 'Bordeaux, France',
+    image_url: 'https://images.unsplash.com/photo-1581147036324-c1c9309b015f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
     status: 'available'
   },
   {
-    title: 'DJ Equipment Set',
-    category: 'leisure',
-    description: 'Professional DJ setup with mixer and speakers. Perfect for events.',
-    price_per_day: 100.00,
-    location: 'Miami, FL',
-    image_url: 'https://images.unsplash.com/photo-1571266028243-e4b6f08bae5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-    status: 'available'
-  },
-  {
-    title: 'Photography Kit',
-    category: 'leisure',
-    description: 'Complete DSLR camera kit with lenses. Great for professional shoots.',
-    price_per_day: 75.00,
-    location: 'San Francisco, CA',
-    image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1464&q=80',
-    status: 'available'
-  },
-  {
-    title: 'Gaming Console',
-    category: 'leisure',
-    description: 'Latest gaming console with 2 controllers and popular games.',
+    name: 'Gaming Console',
+    category: 'electronics',
+    description: 'Latest gaming console with 2 controllers',
     price_per_day: 35.00,
-    location: 'Boston, MA',
+    location: 'Toulouse, France',
     image_url: 'https://images.unsplash.com/photo-1605901309584-818e25960a8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1619&q=80',
     status: 'available'
   },
   {
-    title: 'Outdoor Grill',
-    category: 'leisure',
-    description: 'Large propane grill with side burner. Perfect for BBQ parties.',
+    name: 'Professional Drone',
+    category: 'electronics',
+    description: '4K camera drone with extra batteries',
+    price_per_day: 45.00,
+    location: 'Nice, France',
+    image_url: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    status: 'available'
+  },
+  {
+    name: 'Kayak Set',
+    category: 'sports',
+    description: 'Two-person kayak with paddles and life jackets',
     price_per_day: 40.00,
-    location: 'Dallas, TX',
-    image_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    location: 'Brest, France',
+    image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
     status: 'available'
   }
 ];
@@ -147,7 +110,7 @@ async function seedItems() {
     } else {
       console.log(`Successfully created ${createdItems.length} items:`);
       createdItems.forEach(item => {
-        console.log(`- ${item.title} (${item.category}) - $${item.price_per_day}`);
+        console.log(`- ${item.name} (${item.category}) - $${item.price_per_day}`);
       });
     }
 

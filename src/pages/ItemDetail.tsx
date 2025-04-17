@@ -16,9 +16,10 @@ interface Item {
   category: string;
   price_per_day: number;
   location: string;
-  photos: string[];
+  image_url: string;
   owner_id: string;
-  created_at: string;
+  start_date: string;
+  end_date: string;
   profiles: {
     username: string;
     avatar_url: string | null;
@@ -30,7 +31,6 @@ export default function ItemDetail() {
   const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<number>(0);
   const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
@@ -53,13 +53,7 @@ export default function ItemDetail() {
         if (error) throw error;
         if (!data) throw new Error('Item not found');
 
-        // Ensure photos is an array
-        const processedData = {
-          ...data,
-          photos: Array.isArray(data.photos) ? data.photos : []
-        };
-
-        setItem(processedData as Item);
+        setItem(data as Item);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -106,93 +100,42 @@ export default function ItemDetail() {
             <div className="space-y-4">
               <div className="aspect-w-16 aspect-h-9 relative rounded-lg overflow-hidden bg-gray-100">
                 <img
-                  src={item.photos[selectedImage] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop'}
+                  src={item.image_url || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop'}
                   alt={item.name}
                   onError={handleImageError}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                {item.photos.map((photo, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`aspect-square rounded-md overflow-hidden ${
-                      selectedImage === index ? 'ring-2 ring-primary' : ''
-                    }`}
-                  >
-                    <img
-                      src={photo}
-                      alt={`${item.name} thumbnail ${index + 1}`}
-                      onError={handleImageError}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Item Details */}
-            <div className="space-y-6 p-4">
+            <div className="space-y-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">{item.name}</h1>
-                <div className="mt-2 flex items-center gap-2 text-gray-500">
-                  <MapPin size={18} />
+                <p className="mt-2 text-gray-500">{item.description}</p>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center text-gray-500">
+                  <MapPin className="w-5 h-5 mr-2" />
                   <span>{item.location}</span>
                 </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold text-primary">${item.price_per_day}</p>
-                  <p className="text-sm text-gray-500">per day</p>
-                </div>
-                <Button size="lg">
-                  Rent Now
-                </Button>
-              </div>
-
-              <div className="border-t pt-4">
-                <h2 className="text-xl font-semibold mb-2">Description</h2>
-                <p className="text-gray-600">{item.description}</p>
-              </div>
-
-              <div className="border-t pt-4">
-                <h2 className="text-xl font-semibold mb-4">Specifications</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <User size={18} className="text-gray-400" />
-                    <span className="text-gray-600">Owner: {item.profiles.username}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar size={18} className="text-gray-400" />
-                    <span className="text-gray-600">Listed: {new Date(item.created_at).toLocaleDateString()}</span>
-                  </div>
+                <div className="flex items-center text-gray-500">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  <span>Available: {new Date(item.start_date).toLocaleDateString()} - {new Date(item.end_date).toLocaleDateString()}</span>
                 </div>
               </div>
 
-              {/* Map Toggle */}
-              <div className="border-t pt-4">
-                <button
-                  onClick={() => setShowMap(!showMap)}
-                  className="text-primary hover:text-primary/80 flex items-center gap-2"
-                >
-                  <MapPin size={18} />
-                  {showMap ? 'Hide Map' : 'Show Map'}
-                </button>
-                {showMap && (
-                  <div className="mt-4 aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                    <iframe
-                      title="Item location"
-                      width="100%"
-                      height="100%"
-                      frameBorder="0"
-                      style={{ border: 0 }}
-                      src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(item.location)}`}
-                      allowFullScreen
-                    />
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-lg font-semibold text-gray-900">${item.price_per_day}</p>
+                    <p className="text-sm text-gray-500">per day</p>
                   </div>
-                )}
+                  <Button size="lg">
+                    Rent Now
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
