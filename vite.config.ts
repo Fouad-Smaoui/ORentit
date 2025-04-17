@@ -14,7 +14,11 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
+      external: ['react-datepicker'],
       output: {
+        globals: {
+          'react-datepicker': 'ReactDatePicker'
+        },
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           ui: ['@/components/ui'],
@@ -23,6 +27,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    include: ['react-datepicker'],
     exclude: ['lucide-react'],
   },
 });
