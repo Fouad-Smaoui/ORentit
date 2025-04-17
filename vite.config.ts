@@ -17,15 +17,12 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          datepicker: ['react-datepicker'],
-        },
-      },
-    },
+          uploadcare: ['@uploadcare/upload-client']
+        }
+      }
+    }
   },
   optimizeDeps: {
-    include: ['react-datepicker'],
-  },
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
-  },
+    include: ['@uploadcare/upload-client']
+  }
 });

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Calendar } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -11,8 +11,6 @@ const ListItem: React.FC = () => {
   const [error, setError] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const startDateRef = useRef<HTMLInputElement>(null);
-  const endDateRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -63,6 +61,14 @@ const ListItem: React.FC = () => {
 
   // Get today's date in YYYY-MM-DD format for min date attribute
   const today = new Date().toISOString().split('T')[0];
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -163,24 +169,16 @@ const ListItem: React.FC = () => {
             </label>
             <div className="relative">
               <input
-                ref={startDateRef}
-                type="text"
-                value={formData.startDate}
-                readOnly
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                onClick={() => startDateRef.current?.showPicker()}
-              />
-              <Calendar 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                size={16} 
-              />
-              <input
                 type="date"
-                min={today}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                min={today}
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
+            <p className="mt-1 text-sm text-gray-500">{formatDate(formData.startDate)}</p>
           </div>
 
           <div>
@@ -189,24 +187,16 @@ const ListItem: React.FC = () => {
             </label>
             <div className="relative">
               <input
-                ref={endDateRef}
-                type="text"
-                value={formData.endDate}
-                readOnly
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                onClick={() => endDateRef.current?.showPicker()}
-              />
-              <Calendar 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
-                size={16} 
-              />
-              <input
                 type="date"
-                min={formData.startDate}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                value={formData.endDate}
                 onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                min={formData.startDate}
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
+            <p className="mt-1 text-sm text-gray-500">{formatDate(formData.endDate)}</p>
           </div>
         </div>
 
