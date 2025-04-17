@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Calendar } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { uploadFile } from '@uploadcare/upload-client';
-import { uploadImage, createItem } from '../lib/supabase';
+import { uploadImage, createItem, supabase } from '../lib/supabase';
+
+interface FormData {
+  name: string;
+  description: string;
+  price_per_day: number;
+  category: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+}
 
 const ListItem: React.FC = () => {
   const navigate = useNavigate();
@@ -11,18 +19,43 @@ const ListItem: React.FC = () => {
   const [error, setError] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const [formData, setFormData] = useState({
-    title: '',
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
     description: '',
-    price: 0,
+    price_per_day: 0,
     category: '',
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0],
+    location: '',
+    startDate: '',
+    endDate: ''
   });
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (!session || error) {
+        console.error('Authentication error:', error);
+        setError('You must be logged in to list items');
+        navigate('/login');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB');
+        return;
+      }
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+      setError('');
       setImageFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
@@ -30,30 +63,46 @@ const ListItem: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageFile) {
-      alert('Please select an image');
-      return;
-    }
+    setLoading(true);
+    setError('');
 
     try {
-      setLoading(true);
+      if (!formData.name || !formData.price_per_day || !formData.category || !formData.startDate || !formData.endDate || !formData.location) {
+        setError('Please fill in all required fields');
+        return;
+      }
+
+      if (!imageFile) {
+        setError('Please select an image');
+        return;
+      }
+
+      // Upload image first
       const imageUrl = await uploadImage(imageFile);
-      
-      await createItem({
-        title: formData.title,
-        description: formData.description,
-        price: formData.price,
+      console.log('Image uploaded successfully:', imageUrl);
+
+      // Create item with the image URL
+      const result = await createItem({
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        price_per_day: parseFloat(formData.price_per_day.toString()),
         category: formData.category,
+        location: formData.location.trim(),
         image_url: imageUrl,
         status: 'available',
         start_date: formData.startDate,
         end_date: formData.endDate,
       });
 
-      navigate('/dashboard');
+      console.log('Item created successfully:', result);
+      navigate('/');
     } catch (error) {
-      console.error('Error creating item:', error);
-      alert('Failed to create item. Please try again.');
+      console.error('Error in form submission:', error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
     } finally {
       setLoading(false);
     }
@@ -74,6 +123,11 @@ const ListItem: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">List New Item</h1>
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
         <div className="mb-6">
           <label className="block text-gray-700 text-sm font-bold mb-2">
             Item Image
@@ -102,12 +156,12 @@ const ListItem: React.FC = () => {
 
         <div className="mb-6">
           <label className="block text-gray-700 text-sm font-bold mb-2">
-            Title
+            Name
           </label>
           <input
             type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -126,6 +180,20 @@ const ListItem: React.FC = () => {
           />
         </div>
 
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Location
+          </label>
+          <input
+            type="text"
+            value={formData.location}
+            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter the item's location"
+            required
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -133,8 +201,8 @@ const ListItem: React.FC = () => {
             </label>
             <input
               type="number"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+              value={formData.price_per_day}
+              onChange={(e) => setFormData({ ...formData, price_per_day: parseFloat(e.target.value) })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               min="0"
               step="0.01"

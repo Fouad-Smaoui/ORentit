@@ -12,36 +12,89 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export interface Item {
   id: string;
   user_id: string;
-  title: string;
+  owner_id: string;
+  name: string;
   description: string;
-  price: number;
+  price_per_day: number;
   category: string;
   image_url: string;
+  location: string;
   status: 'available' | 'rented' | 'unavailable';
   created_at: string;
   start_date: string;
   end_date: string;
 }
 
+export const ensurePublicBucket = async () => {
+  try {
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const publicBucket = buckets?.find(bucket => bucket.name === 'public');
+    
+    if (!publicBucket) {
+      const { data, error } = await supabase.storage.createBucket('public', {
+        public: true,
+        fileSizeLimit: 5242880, // 5MB in bytes
+        allowedMimeTypes: ['image/*']
+      });
+      
+      if (error) {
+        console.error('Error creating public bucket:', error);
+        throw error;
+      }
+      console.log('Created public bucket:', data);
+    }
+  } catch (error) {
+    console.error('Error ensuring public bucket exists:', error);
+    throw error;
+  }
+};
+
 export const uploadImage = async (file: File): Promise<string> => {
   try {
+    if (!file) throw new Error('No file provided');
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error('File size must be less than 5MB');
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      throw new Error('Only image files are allowed');
+    }
+
     // Create a unique file name
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-    const filePath = `items/${fileName}`;
+    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
 
     // Upload the file to Supabase Storage
     const { error: uploadError, data } = await supabase.storage
       .from('items')
-      .upload(filePath, file);
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: file.type
+      });
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      console.error('Upload error details:', uploadError);
+      throw new Error(`Upload failed: ${uploadError.message}`);
+    }
+
+    if (!data?.path) {
+      throw new Error('Upload succeeded but file path is missing');
+    }
 
     // Get the public URL
     const { data: { publicUrl } } = supabase.storage
       .from('items')
-      .getPublicUrl(filePath);
+      .getPublicUrl(data.path);
 
+    if (!publicUrl) {
+      throw new Error('Failed to get public URL for uploaded image');
+    }
+
+    console.log('Successfully uploaded image:', publicUrl);
     return publicUrl;
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -49,23 +102,56 @@ export const uploadImage = async (file: File): Promise<string> => {
   }
 };
 
-export const createItem = async (item: Omit<Item, 'created_at' | 'id' | 'user_id'>) => {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) throw userError;
+export const createItem = async (item: Omit<Item, 'created_at' | 'id' | 'user_id' | 'owner_id'>) => {
+  // Check authentication status
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (!session || sessionError) {
+    console.error('No active session found:', sessionError);
+    throw new Error('You must be logged in to create an item');
+  }
 
-  const { data, error } = await supabase
-    .from('items')
-    .insert([
-      {
-        ...item,
-        user_id: userData.user.id,
-      },
-    ])
-    .select()
-    .single();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (!user || userError) {
+    console.error('Failed to get user:', userError);
+    throw new Error('Could not verify user identity');
+  }
 
-  if (error) throw error;
-  return data;
+  try {
+    // Validate required fields
+    if (!item.location) {
+      throw new Error('Location is required');
+    }
+
+    // Create the item with all required fields
+    const { data, error } = await supabase
+      .from('items')
+      .insert([
+        {
+          ...item, // Include all item fields
+          user_id: user.id,
+          owner_id: user.id,
+          status: item.status || 'available',
+          created_at: new Date().toISOString()
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Database error:', error);
+      throw new Error(`Failed to create item: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('No data returned from insert operation');
+    }
+
+    console.log('Successfully created item:', data);
+    return data;
+  } catch (error) {
+    console.error('Error in createItem:', error);
+    throw error;
+  }
 };
 
 export const updateItem = async (id: string, updates: Partial<Item>) => {
