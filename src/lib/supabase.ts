@@ -32,6 +32,9 @@ export interface Item {
 export const uploadImage = async (file: File): Promise<string> => {
   try {
     const result = await uploadClient.uploadFile(file);
+    if (!result.cdnUrl) {
+      throw new Error('Failed to get CDN URL from upload');
+    }
     return result.cdnUrl;
   } catch (error) {
     console.error('Error uploading image:', error);

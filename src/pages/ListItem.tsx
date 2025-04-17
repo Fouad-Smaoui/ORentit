@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, MapPin, Calendar } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { uploadFile } from '@uploadcare/upload-client';
 import { uploadImage, createItem } from '../lib/supabase';
+import { DateInput } from '../components/DateInput';
 
 const ListItem: React.FC = () => {
   const navigate = useNavigate();
@@ -155,33 +156,20 @@ const ListItem: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Available From
-            </label>
-            <input
-              type="date"
-              value={formData.startDate}
-              min={today}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Available Until
-            </label>
-            <input
-              type="date"
-              value={formData.endDate}
-              min={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+          <DateInput
+            label="Available From"
+            value={formData.startDate}
+            onChange={(value) => setFormData({ ...formData, startDate: value })}
+            min={today}
+            required
+          />
+          <DateInput
+            label="Available Until"
+            value={formData.endDate}
+            onChange={(value) => setFormData({ ...formData, endDate: value })}
+            min={formData.startDate}
+            required
+          />
         </div>
 
         <button
