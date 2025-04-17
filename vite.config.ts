@@ -14,20 +14,27 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
-      external: ['react-datepicker'],
       output: {
-        globals: {
-          'react-datepicker': 'ReactDatePicker'
-        },
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@/components/ui'],
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-datepicker')) {
+              return 'datepicker';
+            }
+            if (id.includes('react')) {
+              return 'vendor';
+            }
+            if (id.includes('@uploadcare')) {
+              return 'uploadcare';
+            }
+          }
+          if (id.includes('components/ui')) {
+            return 'ui';
+          }
         },
       },
     },
   },
   optimizeDeps: {
-    include: ['react-datepicker'],
-    exclude: ['lucide-react'],
+    include: ['react-datepicker', '@uploadcare/upload-client'],
   },
 });
