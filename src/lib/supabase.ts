@@ -17,14 +17,16 @@ const uploadClient = new UploadClient({
 
 export interface Item {
   id: string;
+  user_id: string;
   title: string;
   description: string;
   price: number;
-  image_url: string;
-  user_id: string;
-  created_at: string;
-  status: 'available' | 'rented';
   category: string;
+  image_url: string;
+  status: 'available' | 'rented' | 'unavailable';
+  created_at: string;
+  start_date: string;
+  end_date: string;
 }
 
 export const uploadImage = async (file: File): Promise<string> => {
@@ -37,13 +39,18 @@ export const uploadImage = async (file: File): Promise<string> => {
   }
 };
 
-export const createItem = async (item: Omit<Item, 'id' | 'created_at' | 'user_id'>) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('User not authenticated');
+export const createItem = async (item: Omit<Item, 'created_at' | 'id' | 'user_id'>) => {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
 
   const { data, error } = await supabase
     .from('items')
-    .insert([{ ...item, user_id: user.id }])
+    .insert([
+      {
+        ...item,
+        user_id: userData.user.id,
+      },
+    ])
     .select()
     .single();
 

@@ -1,20 +1,9 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, MapPin, Calendar } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { uploadFile } from '@uploadcare/upload-client';
 import { uploadImage, createItem } from '../lib/supabase';
-import "react-datepicker/dist/react-datepicker.css";
-
-// Lazy load the DatePicker component
-const ReactDatePicker = React.lazy(() => import('react-datepicker'));
-
-// DatePicker wrapper component
-const DatePickerWrapper = (props: any) => (
-  <Suspense fallback={<div className="w-full px-3 py-2 border border-gray-300 rounded-lg">Loading...</div>}>
-    <ReactDatePicker {...props} />
-  </Suspense>
-);
 
 const ListItem: React.FC = () => {
   const navigate = useNavigate();
@@ -27,8 +16,8 @@ const ListItem: React.FC = () => {
     description: '',
     price: 0,
     category: '',
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: new Date().toISOString().split('T')[0], // Format: YYYY-MM-DD
+    endDate: new Date().toISOString().split('T')[0],
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +46,8 @@ const ListItem: React.FC = () => {
         category: formData.category,
         image_url: imageUrl,
         status: 'available',
+        start_date: formData.startDate,
+        end_date: formData.endDate,
       });
 
       navigate('/dashboard');
@@ -67,6 +58,9 @@ const ListItem: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // Get today's date in YYYY-MM-DD format for min date attribute
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -165,12 +159,13 @@ const ListItem: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Available From
             </label>
-            <DatePickerWrapper
-              selected={formData.startDate}
-              onChange={(date: Date | null) => setFormData({ ...formData, startDate: date || new Date() })}
+            <input
+              type="date"
+              value={formData.startDate}
+              min={today}
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              dateFormat="MM/dd/yyyy"
-              minDate={new Date()}
+              required
             />
           </div>
 
@@ -178,12 +173,13 @@ const ListItem: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Available Until
             </label>
-            <DatePickerWrapper
-              selected={formData.endDate}
-              onChange={(date: Date | null) => setFormData({ ...formData, endDate: date || new Date() })}
+            <input
+              type="date"
+              value={formData.endDate}
+              min={formData.startDate}
+              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              dateFormat="MM/dd/yyyy"
-              minDate={formData.startDate}
+              required
             />
           </div>
         </div>
