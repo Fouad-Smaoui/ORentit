@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, MapPin, Calendar } from 'lucide-react';
-import ReactDatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
 import { supabase } from '../lib/supabase';
 import { uploadFile } from '@uploadcare/upload-client';
 import { uploadImage, createItem } from '../lib/supabase';
+import "react-datepicker/dist/react-datepicker.css";
+
+// Lazy load the DatePicker component
+const ReactDatePicker = React.lazy(() => import('react-datepicker'));
+
+// DatePicker wrapper component
+const DatePickerWrapper = (props: any) => (
+  <Suspense fallback={<div className="w-full px-3 py-2 border border-gray-300 rounded-lg">Loading...</div>}>
+    <ReactDatePicker {...props} />
+  </Suspense>
+);
 
 const ListItem: React.FC = () => {
   const navigate = useNavigate();
@@ -156,7 +165,7 @@ const ListItem: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Available From
             </label>
-            <ReactDatePicker
+            <DatePickerWrapper
               selected={formData.startDate}
               onChange={(date: Date | null) => setFormData({ ...formData, startDate: date || new Date() })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -169,7 +178,7 @@ const ListItem: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Available Until
             </label>
-            <ReactDatePicker
+            <DatePickerWrapper
               selected={formData.endDate}
               onChange={(date: Date | null) => setFormData({ ...formData, endDate: date || new Date() })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

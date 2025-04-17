@@ -15,26 +15,17 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react-datepicker')) {
-              return 'datepicker';
-            }
-            if (id.includes('react')) {
-              return 'vendor';
-            }
-            if (id.includes('@uploadcare')) {
-              return 'uploadcare';
-            }
-          }
-          if (id.includes('components/ui')) {
-            return 'ui';
-          }
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          datepicker: ['react-datepicker'],
         },
       },
     },
   },
   optimizeDeps: {
-    include: ['react-datepicker', '@uploadcare/upload-client'],
+    include: ['react-datepicker'],
+  },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   },
 });
