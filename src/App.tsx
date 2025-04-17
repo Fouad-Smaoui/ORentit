@@ -9,6 +9,7 @@ import Search from './pages/Search';
 import ItemDetail from './pages/ItemDetail';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
+import { ItemsPage } from './pages/ItemsPage';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                   </PrivateRoute>
                 }
               />
+              <Route path="/items" element={<ItemsPage />} />
             </Routes>
           </main>
         </div>
