@@ -1,3 +1,30 @@
+@import 'react-datepicker/dist/react-datepicker.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom styles for datepicker */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500;
+}
+
+.react-datepicker {
+  @apply border border-gray-200 rounded-lg shadow-lg;
+}
+
+.react-datepicker__header {
+  @apply bg-gray-50 border-b border-gray-200;
+}
+
+.react-datepicker__day--selected {
+  @apply bg-primary-500 text-white hover:bg-primary-600;
+}
+
+.react-datepicker__day--keyboard-selected {
+  @apply bg-primary-100 text-primary-900;
+}
