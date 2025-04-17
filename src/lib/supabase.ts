@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { UploadClient } from '@uploadcare/upload-client';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -9,11 +8,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Initialize UploadCare client
-const uploadClient = new UploadClient({
-  publicKey: import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY,
-});
 
 export interface Item {
   id: string;
@@ -31,11 +25,24 @@ export interface Item {
 
 export const uploadImage = async (file: File): Promise<string> => {
   try {
-    const result = await uploadClient.uploadFile(file);
-    if (!result.cdnUrl) {
-      throw new Error('Failed to get CDN URL from upload');
-    }
-    return result.cdnUrl;
+    // Create a unique file name
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+    const filePath = `items/${fileName}`;
+
+    // Upload the file to Supabase Storage
+    const { error: uploadError, data } = await supabase.storage
+      .from('items')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    // Get the public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('items')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
   } catch (error) {
     console.error('Error uploading image:', error);
     throw error;

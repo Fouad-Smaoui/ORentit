@@ -16,13 +16,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          uploadcare: ['@uploadcare/upload-client']
+          vendor: ['react', 'react-dom', 'react-router-dom']
         }
       }
     }
-  },
-  optimizeDeps: {
-    include: ['@uploadcare/upload-client']
   }
 });
