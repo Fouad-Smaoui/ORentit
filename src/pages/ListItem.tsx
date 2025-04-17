@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload } from 'lucide-react';
+import { Upload, Calendar } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { uploadFile } from '@uploadcare/upload-client';
 import { uploadImage, createItem } from '../lib/supabase';
-import { DateInput } from '../components/DateInput';
 
 const ListItem: React.FC = () => {
   const navigate = useNavigate();
@@ -12,12 +11,14 @@ const ListItem: React.FC = () => {
   const [error, setError] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
+  const startDateRef = useRef<HTMLInputElement>(null);
+  const endDateRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: 0,
     category: '',
-    startDate: new Date().toISOString().split('T')[0], // Format: YYYY-MM-DD
+    startDate: new Date().toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
   });
 
@@ -156,20 +157,57 @@ const ListItem: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <DateInput
-            label="Available From"
-            value={formData.startDate}
-            onChange={(value) => setFormData({ ...formData, startDate: value })}
-            min={today}
-            required
-          />
-          <DateInput
-            label="Available Until"
-            value={formData.endDate}
-            onChange={(value) => setFormData({ ...formData, endDate: value })}
-            min={formData.startDate}
-            required
-          />
+          <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Available From
+            </label>
+            <div className="relative">
+              <input
+                ref={startDateRef}
+                type="text"
+                value={formData.startDate}
+                readOnly
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                onClick={() => startDateRef.current?.showPicker()}
+              />
+              <Calendar 
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                size={16} 
+              />
+              <input
+                type="date"
+                min={today}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Available Until
+            </label>
+            <div className="relative">
+              <input
+                ref={endDateRef}
+                type="text"
+                value={formData.endDate}
+                readOnly
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                onClick={() => endDateRef.current?.showPicker()}
+              />
+              <Calendar 
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" 
+                size={16} 
+              />
+              <input
+                type="date"
+                min={formData.startDate}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              />
+            </div>
+          </div>
         </div>
 
         <button
