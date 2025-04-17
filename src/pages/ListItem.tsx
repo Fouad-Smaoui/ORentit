@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, MapPin, Calendar } from 'lucide-react';
-import DatePicker from 'react-datepicker';
+import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { supabase } from '../lib/supabase';
 import { uploadFile } from '@uploadcare/upload-client';
@@ -156,10 +156,12 @@ const ListItem: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Available From
             </label>
-            <DatePicker
+            <ReactDatePicker
               selected={formData.startDate}
-              onChange={(date) => setFormData({ ...formData, startDate: date || new Date() })}
+              onChange={(date: Date | null) => setFormData({ ...formData, startDate: date || new Date() })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              dateFormat="MM/dd/yyyy"
+              minDate={new Date()}
             />
           </div>
 
@@ -167,10 +169,12 @@ const ListItem: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Available Until
             </label>
-            <DatePicker
+            <ReactDatePicker
               selected={formData.endDate}
-              onChange={(date) => setFormData({ ...formData, endDate: date || new Date() })}
+              onChange={(date: Date | null) => setFormData({ ...formData, endDate: date || new Date() })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              dateFormat="MM/dd/yyyy"
+              minDate={formData.startDate}
             />
           </div>
         </div>
