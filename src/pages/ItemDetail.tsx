@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { MapPin, Calendar, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { BookingModal } from '../components/BookingModal';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -32,6 +33,7 @@ export default function ItemDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchItem() {
@@ -70,6 +72,14 @@ export default function ItemDetail() {
     if (target.src !== fallbackUrl) {
       target.src = fallbackUrl;
     }
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   if (loading) {
@@ -122,7 +132,7 @@ export default function ItemDetail() {
                 </div>
                 <div className="flex items-center text-gray-500">
                   <Calendar className="w-5 h-5 mr-2" />
-                  <span>Available: {new Date(item.start_date).toLocaleDateString()} - {new Date(item.end_date).toLocaleDateString()}</span>
+                  <span>Available: {formatDate(item.start_date)} - {formatDate(item.end_date)}</span>
                 </div>
               </div>
 
@@ -132,7 +142,10 @@ export default function ItemDetail() {
                     <p className="text-lg font-semibold text-gray-900">${item.price_per_day}</p>
                     <p className="text-sm text-gray-500">per day</p>
                   </div>
-                  <Button size="lg">
+                  <Button 
+                    size="lg"
+                    onClick={() => setIsBookingModalOpen(true)}
+                  >
                     Rent Now
                   </Button>
                 </div>
@@ -141,6 +154,15 @@ export default function ItemDetail() {
           </div>
         </div>
       </div>
+
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        itemId={item.id}
+        pricePerDay={item.price_per_day}
+        startDate={item.start_date}
+        endDate={item.end_date}
+      />
     </div>
   );
 } 
