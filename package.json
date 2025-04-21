@@ -11,19 +11,19 @@
     "seed": "ts-node -P tsconfig.seed.json supabase/seed.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.3",
+    "@supabase/supabase-js": "^2.49.4",
     "clsx": "^2.1.0",
     "dotenv": "^16.5.0",
     "lucide-react": "^0.488.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.1",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.2.1",

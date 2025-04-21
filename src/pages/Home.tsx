@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, MapPin, Car, Tent } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import ItemCard from '../components/ItemCard';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -18,7 +18,7 @@ interface Item {
   price_per_day: number;
   location: string;
   owner_id: string;
-  photos: string[];
+  image_url: string;
   profiles: {
     username: string;
     avatar_url: string | null;
@@ -26,8 +26,10 @@ interface Item {
 }
 
 const Home = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function fetchItems() {
@@ -54,6 +56,13 @@ const Home = () => {
     fetchItems();
   }, []);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <div>
       {/* Hero Section */}
@@ -72,20 +81,26 @@ const Home = () => {
           
           {/* Search Bar */}
           <div className="bg-white p-4 rounded-lg shadow-lg max-w-2xl">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <MapPin className="absolute left-3 top-3 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  placeholder="Where do you want to rent?"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+            <form onSubmit={handleSearch}>
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search for anything to rent..."
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  className="bg-primary-500 text-white px-6 py-2 rounded-md hover:bg-primary-600 flex items-center justify-center gap-2 transition-colors duration-200"
+                >
+                  Search
+                </button>
               </div>
-              <button className="bg-primary-500 text-white px-6 py-2 rounded-md hover:bg-primary-600 flex items-center justify-center gap-2">
-                <Search size={20} />
-                Search
-              </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>

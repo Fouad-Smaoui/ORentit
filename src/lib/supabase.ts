@@ -194,15 +194,15 @@ export const getItems = async (filters?: {
   }
 
   if (filters?.search) {
-    query = query.ilike('title', `%${filters.search}%`);
+    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
   }
 
   if (filters?.minPrice) {
-    query = query.gte('price', filters.minPrice);
+    query = query.gte('price_per_day', filters.minPrice);
   }
 
   if (filters?.maxPrice) {
-    query = query.lte('price', filters.maxPrice);
+    query = query.lte('price_per_day', filters.maxPrice);
   }
 
   const { data, error } = await query.order('created_at', { ascending: false });
