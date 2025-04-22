@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Calendar } from 'lucide-react';
-import { uploadImage, createItem, supabase } from '../lib/supabase';
+import { uploadImage, createItem, supabase, ensurePublicBucket } from '../lib/supabase';
 
 interface FormData {
   name: string;
@@ -19,6 +19,7 @@ const ListItem: React.FC = () => {
   const [error, setError] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
@@ -29,17 +30,29 @@ const ListItem: React.FC = () => {
     endDate: ''
   });
 
-  // Check authentication on component mount
+  // Check authentication and initialize storage on component mount
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (!session || error) {
-        console.error('Authentication error:', error);
-        setError('You must be logged in to list items');
-        navigate('/login');
+    const initializeComponent = async () => {
+      try {
+        const { data: { session }, error: authError } = await supabase.auth.getSession();
+        if (!session || authError) {
+          console.error('Authentication error:', authError);
+          setError('You must be logged in to list items');
+          navigate('/auth');
+          return;
+        }
+
+        setIsAuthenticated(true);
+        
+        // Initialize storage bucket
+        await ensurePublicBucket();
+      } catch (error) {
+        console.error('Initialization error:', error);
+        setError('Failed to initialize. Please try again.');
       }
     };
-    checkAuth();
+
+    initializeComponent();
   }, [navigate]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +76,12 @@ const ListItem: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      setError('You must be logged in to list items');
+      navigate('/auth');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -77,7 +96,7 @@ const ListItem: React.FC = () => {
         return;
       }
 
-      // Upload image first
+      // Upload image
       const imageUrl = await uploadImage(imageFile);
       console.log('Image uploaded successfully:', imageUrl);
 
@@ -95,7 +114,7 @@ const ListItem: React.FC = () => {
       });
 
       console.log('Item created successfully:', result);
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error in form submission:', error);
       if (error instanceof Error) {
@@ -118,6 +137,14 @@ const ListItem: React.FC = () => {
       day: 'numeric'
     });
   };
+
+  if (!isAuthenticated) {
+    return <div className="container mx-auto px-4 py-8">
+      <div className="text-center">
+        <p className="text-red-600">Please log in to list items</p>
+      </div>
+    </div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -143,6 +170,7 @@ const ListItem: React.FC = () => {
                 file:text-sm file:font-semibold
                 file:bg-blue-50 file:text-blue-700
                 hover:file:bg-blue-100"
+              disabled={loading}
             />
             {previewUrl && (
               <img
@@ -164,6 +192,7 @@ const ListItem: React.FC = () => {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
+            disabled={loading}
           />
         </div>
 
@@ -177,6 +206,7 @@ const ListItem: React.FC = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows={4}
             required
+            disabled={loading}
           />
         </div>
 
@@ -191,6 +221,7 @@ const ListItem: React.FC = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter the item's location"
             required
+            disabled={loading}
           />
         </div>
 
@@ -207,6 +238,7 @@ const ListItem: React.FC = () => {
               min="0"
               step="0.01"
               required
+              disabled={loading}
             />
           </div>
 
@@ -219,6 +251,7 @@ const ListItem: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              disabled={loading}
             >
               <option value="">Select a category</option>
               <option value="electronics">Electronics</option>
@@ -243,6 +276,7 @@ const ListItem: React.FC = () => {
                 min={today}
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={loading}
               />
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
@@ -261,6 +295,7 @@ const ListItem: React.FC = () => {
                 min={formData.startDate}
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={loading}
               />
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
@@ -270,10 +305,10 @@ const ListItem: React.FC = () => {
 
         <button
           type="submit"
+          className={`w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={loading}
-          className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
         >
-          {loading ? 'Creating...' : 'List Item'}
+          {loading ? 'Creating...' : 'Create Listing'}
         </button>
       </form>
     </div>

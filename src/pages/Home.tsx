@@ -29,7 +29,6 @@ const Home = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function fetchItems() {
@@ -56,51 +55,37 @@ const Home = () => {
     fetchItems();
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
-
   return (
     <div>
       {/* Hero Section */}
       <div
-        className="relative h-[600px] bg-cover bg-center"
+        className="relative h-[600px] bg-cover bg-center bg-fixed"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2021&q=80")',
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Rent Anything, <br />
             <span className="text-primary-400">Anywhere</span>
           </h1>
-          
-          {/* Search Bar */}
-          <div className="bg-white p-4 rounded-lg shadow-lg max-w-2xl">
-            <form onSubmit={handleSearch}>
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search for anything to rent..."
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <button 
-                  type="submit"
-                  className="bg-primary-500 text-white px-6 py-2 rounded-md hover:bg-primary-600 flex items-center justify-center gap-2 transition-colors duration-200"
-                >
-                  Search
-                </button>
-              </div>
-            </form>
+          <p className="text-white text-xl mb-8 max-w-2xl">
+            Join our community of renters and owners. Share your items or find exactly what you need.
+          </p>
+          <div className="flex gap-4">
+            <Link
+              to="/search"
+              className="bg-white text-gray-900 px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              Start Browsing
+            </Link>
+            <Link
+              to="/list-item"
+              className="bg-[#a100ff] text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              List Your Item
+            </Link>
           </div>
         </div>
       </div>
@@ -149,7 +134,7 @@ const Home = () => {
           <h2 className="text-3xl font-bold text-gray-900">Featured Items</h2>
           <Link 
             to="/items" 
-            className="text-primary-500 hover:text-primary-600 font-medium flex items-center gap-2"
+            className="text-[#a100ff] hover:text-opacity-90 font-medium flex items-center gap-2"
           >
             View all
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

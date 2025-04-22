@@ -2,17 +2,40 @@
 insert into storage.buckets (id, name, public)
 values ('items', 'items', true);
 
--- Set up storage policy to allow authenticated users to upload
-create policy "Allow authenticated users to upload images"
-on storage.objects for insert
-to authenticated
-with check (
-  bucket_id = 'items' AND
-  auth.role() = 'authenticated'
-);
+-- Enable RLS
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 
--- Set up storage policy to allow public to view images
-create policy "Allow public to view images"
-on storage.objects for select
-to public
-using (bucket_id = 'items'); 
+-- Create policy to allow authenticated users to create buckets
+CREATE POLICY "Allow users to create buckets"
+ON storage.buckets
+FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+-- Create policy to allow authenticated users to upload objects
+CREATE POLICY "Allow authenticated uploads"
+ON storage.objects
+FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'items' AND auth.role() = 'authenticated');
+
+-- Create policy to allow authenticated users to update their uploads
+CREATE POLICY "Allow authenticated updates"
+ON storage.objects
+FOR UPDATE
+TO authenticated
+USING (bucket_id = 'items' AND auth.uid() = owner);
+
+-- Create policy to allow public to view images
+CREATE POLICY "Allow public to view images"
+ON storage.objects
+FOR SELECT
+TO public
+USING (bucket_id = 'items');
+
+-- Create policy to allow authenticated users to delete their own objects
+CREATE POLICY "Allow users to delete own objects"
+ON storage.objects
+FOR DELETE
+TO authenticated
+USING (bucket_id = 'items' AND auth.uid() = owner); 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
@@ -10,8 +10,42 @@ import ItemDetail from './pages/ItemDetail';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import { ItemsPage } from './pages/ItemsPage';
+import { ensurePublicBucket, supabase } from './lib/supabase';
 
-function App() {
+const App = () => {
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Check authentication and initialize storage
+    const initApp = async () => {
+      try {
+        // Check if user is authenticated
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // Only try to initialize storage if user is authenticated
+        if (session) {
+          await ensurePublicBucket();
+          console.log('Storage bucket initialized successfully');
+        } else {
+          console.log('User not authenticated, skipping storage initialization');
+        }
+      } catch (error) {
+        console.error('Failed to initialize app:', error);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+    
+    initApp();
+  }, []);
+
+  // Show loading state while initializing
+  if (!isInitialized) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>;
+  }
+
   return (
     <AuthProvider>
       <Router>
@@ -46,6 +80,6 @@ function App() {
       </Router>
     </AuthProvider>
   );
-}
+};
 
 export default App;

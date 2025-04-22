@@ -27,30 +27,54 @@ export interface Item {
 
 export const ensurePublicBucket = async () => {
   try {
-    const { data: buckets } = await supabase.storage.listBuckets();
-    const publicBucket = buckets?.find(bucket => bucket.name === 'public');
+    // First check if user is authenticated
+    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    if (!session || authError) {
+      throw new Error('You must be logged in to manage storage');
+    }
+
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+    if (bucketsError) {
+      console.error('Error listing buckets:', bucketsError);
+      throw bucketsError;
+    }
+
+    const itemsBucket = buckets?.find(bucket => bucket.name === 'items');
     
-    if (!publicBucket) {
-      const { data, error } = await supabase.storage.createBucket('public', {
+    if (!itemsBucket) {
+      // Try to create the bucket with public access
+      const { data, error } = await supabase.storage.createBucket('items', {
         public: true,
         fileSizeLimit: 5242880, // 5MB in bytes
         allowedMimeTypes: ['image/*']
       });
       
       if (error) {
-        console.error('Error creating public bucket:', error);
+        console.error('Error creating items bucket:', error);
+        // If bucket already exists but we don't have permission to see it,
+        // we can still try to use it
+        if (error.message.includes('already exists')) {
+          console.log('Bucket already exists, proceeding with upload');
+          return;
+        }
         throw error;
       }
-      console.log('Created public bucket:', data);
+      console.log('Created items bucket:', data);
     }
   } catch (error) {
-    console.error('Error ensuring public bucket exists:', error);
+    console.error('Error ensuring items bucket exists:', error);
     throw error;
   }
 };
 
 export const uploadImage = async (file: File): Promise<string> => {
   try {
+    // Check authentication first
+    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    if (!session || authError) {
+      throw new Error('You must be logged in to upload images');
+    }
+
     if (!file) throw new Error('No file provided');
 
     // Validate file size (max 5MB)
@@ -68,14 +92,14 @@ export const uploadImage = async (file: File): Promise<string> => {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
     const fileName = `${timestamp}-${randomString}.${fileExt}`;
-    const filePath = `items/${fileName}`;
+    const filePath = `${session.user.id}/${fileName}`; // Add user ID to path for better organization
 
     // Upload the file to Supabase Storage
     const { error: uploadError, data } = await supabase.storage
-      .from('public')
+      .from('items')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: false, // Don't overwrite existing files
+        upsert: false,
         contentType: file.type
       });
 
@@ -90,7 +114,7 @@ export const uploadImage = async (file: File): Promise<string> => {
 
     // Get the public URL
     const { data: { publicUrl } } = supabase.storage
-      .from('public')
+      .from('items')
       .getPublicUrl(data.path);
 
     if (!publicUrl) {
