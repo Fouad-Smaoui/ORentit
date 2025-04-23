@@ -254,11 +254,8 @@ const ListItem: React.FC = () => {
               disabled={loading}
             >
               <option value="">Select a category</option>
-              <option value="electronics">Electronics</option>
-              <option value="tools">Tools</option>
-              <option value="sports">Sports Equipment</option>
-              <option value="clothing">Clothing</option>
-              <option value="other">Other</option>
+              <option value="vehicles">Vehicles</option>
+              <option value="leisure">Leisure</option>
             </select>
           </div>
         </div>

@@ -28,7 +28,7 @@ const testItems = [
   },
   {
     name: 'DJ Equipment',
-    category: 'electronics',
+    category: 'leisure',
     description: 'Complete DJ setup with mixer and speakers',
     price_per_day: 60.00,
     location: 'Strasbourg, France',
@@ -37,7 +37,7 @@ const testItems = [
   },
   {
     name: 'Power Tools Set',
-    category: 'tools',
+    category: 'leisure',
     description: 'Complete set of power tools for home improvement',
     price_per_day: 30.00,
     location: 'Bordeaux, France',
@@ -46,7 +46,7 @@ const testItems = [
   },
   {
     name: 'Gaming Console',
-    category: 'electronics',
+    category: 'leisure',
     description: 'Latest gaming console with 2 controllers',
     price_per_day: 35.00,
     location: 'Toulouse, France',
@@ -55,7 +55,7 @@ const testItems = [
   },
   {
     name: 'Professional Drone',
-    category: 'electronics',
+    category: 'leisure',
     description: '4K camera drone with extra batteries',
     price_per_day: 45.00,
     location: 'Nice, France',
@@ -64,7 +64,7 @@ const testItems = [
   },
   {
     name: 'Kayak Set',
-    category: 'sports',
+    category: 'leisure',
     description: 'Two-person kayak with paddles and life jackets',
     price_per_day: 40.00,
     location: 'Brest, France',

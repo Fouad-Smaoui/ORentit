@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ItemCard from '../components/ItemCard';
 import { createClient } from '@supabase/supabase-js';
+import { useSearchParams } from 'react-router-dom';
+import { getItems } from '../lib/supabase';
 
 // Log environment variables for debugging
 console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
@@ -144,6 +146,7 @@ async function insertTestData() {
 }
 
 export function ItemsPage() {
+  const [searchParams] = useSearchParams();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -152,154 +155,38 @@ export function ItemsPage() {
     async function fetchItems() {
       try {
         console.log('🔍 Starting to fetch items...');
+        const category = searchParams.get('category');
         
-        // Test Supabase connection
-        const { data: testData, error: testError } = await supabase
-          .from('items')
-          .select('count');
+        // Fetch items with category filter if present
+        const data = await getItems({ category: category || undefined });
         
-        console.log('📊 Connection test result:', {
-          success: !testError,
-          error: testError?.message,
-          count: testData?.[0]?.count
-        });
-        
-        if (testError) {
-          console.error('❌ Connection test failed:', testError);
-          throw new Error(`Supabase connection test failed: ${testError.message}`);
+        if (data) {
+          setItems(data);
         }
-
-        // Fetch all items with detailed logging
-        const { data, error } = await supabase
-          .from('items')
-          .select(`
-            id,
-            name,
-            description,
-            category,
-            price_per_day,
-            location,
-            image_url,
-            owner_id,
-            created_at,
-            profiles (
-              username,
-              avatar_url
-            )
-          `)
-          .order('created_at', { ascending: false });
-
-        console.log('📦 Fetch result:', {
-          success: !error,
-          itemCount: data?.length ?? 0,
-          firstItem: data?.[0] ? {
-            id: data[0].id,
-            name: data[0].name,
-            hasImageUrl: !!data[0].image_url,
-            image_url: data[0].image_url
-          } : null,
-          error: error?.message
-        });
-
-        if (error) throw error;
-        
-        if (!data || data.length === 0) {
-          console.log('📝 No items found, inserting test data...');
-          const testData = await insertTestData();
-          console.log('✅ Test data inserted:', testData?.length ?? 0, 'items');
-          // Fetch items again after inserting test data
-          const { data: refetchData, error: refetchError } = await supabase
-            .from('items')
-            .select(`
-              id,
-              name,
-              description,
-              category,
-              price_per_day,
-              location,
-              image_url,
-              owner_id,
-              created_at,
-              profiles (
-                username,
-                avatar_url
-              )
-            `);
-          
-          if (refetchError) throw refetchError;
-          if (refetchData) {
-            // Type assertion with runtime validation for refetched data
-            const typedData = refetchData.map(item => {
-              console.log('🔄 Processing item:', {
-                id: item.id,
-                name: item.name,
-                image_urlType: typeof item.image_url,
-                profilesType: typeof item.profiles
-              });
-
-              const profile: Profile = {
-                username: item.profiles?.username ?? 'Unknown User',
-                avatar_url: item.profiles?.avatar_url ?? null
-              };
-
-              return {
-                ...item,
-                profiles: profile
-              } as Item;
-            });
-            setItems(typedData);
-            return;
-          }
-        }
-
-        // Type assertion with runtime validation for initial data
-        const typedData = data.map(item => {
-          console.log('🔄 Processing item:', {
-            id: item.id,
-            name: item.name,
-            image_urlType: typeof item.image_url,
-            profilesType: typeof item.profiles
-          });
-
-          const profile: Profile = {
-            username: item.profiles?.username ?? 'Unknown User',
-            avatar_url: item.profiles?.avatar_url ?? null
-          };
-
-          return {
-            ...item,
-            profiles: profile
-          } as Item;
-        });
-
-        console.log('✅ Final processed items:', {
-          count: typedData.length,
-          sample: typedData.slice(0, 1).map(item => ({
-            id: item.id,
-            name: item.name,
-            image_url: item.image_url,
-            username: item.profiles.username
-          }))
-        });
-
-        setItems(typedData);
-      } catch (err) {
-        console.error('❌ Error in fetchItems:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching items');
+      } catch (error) {
+        console.error('Error fetching items:', error);
+        setError(error instanceof Error ? error.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
     }
 
     fetchItems();
-  }, []);
+  }, [searchParams]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-lg text-gray-600">Loading items...</p>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -327,11 +214,16 @@ export function ItemsPage() {
     );
   }
 
+  const category = searchParams.get('category');
+  const categoryTitle = category ? 
+    `${category.charAt(0).toUpperCase() + category.slice(1)} for Rent` : 
+    'Available Items';
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Available Items</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{categoryTitle}</h1>
           <p className="mt-2 text-gray-600">Browse through our collection of items available for rent</p>
         </div>
         

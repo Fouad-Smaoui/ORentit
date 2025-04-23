@@ -11,7 +11,7 @@ VALUES
   (
     'Mountain Bike',
     'High-quality mountain bike perfect for trails',
-    'sports',
+    'vehicles',
     25.00,
     'Paris, France',
     (SELECT id FROM profiles LIMIT 1)
@@ -19,7 +19,7 @@ VALUES
   (
     'Camera Equipment',
     'Professional DSLR camera with lenses',
-    'electronics',
+    'leisure',
     50.00,
     'Lyon, France',
     (SELECT id FROM profiles LIMIT 1)
@@ -27,7 +27,7 @@ VALUES
   (
     'Camping Tent',
     '4-person tent with rain cover',
-    'outdoor',
+    'leisure',
     15.00,
     'Marseille, France',
     (SELECT id FROM profiles LIMIT 1)
@@ -35,7 +35,7 @@ VALUES
   (
     'Power Tools Set',
     'Complete set of power tools for home improvement',
-    'tools',
+    'leisure',
     30.00,
     'Bordeaux, France',
     (SELECT id FROM profiles LIMIT 1)
