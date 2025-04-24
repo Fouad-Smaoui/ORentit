@@ -19,10 +19,17 @@ export interface Item {
   category: string;
   image_url: string;
   location: string;
+  location_id: string | null;
   status: 'available' | 'rented' | 'unavailable';
   created_at: string;
   start_date: string;
   end_date: string;
+}
+
+// Interface for creating a new item, which temporarily includes location coordinates
+export interface CreateItemData extends Omit<Item, 'created_at' | 'id' | 'user_id' | 'owner_id'> {
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export const ensurePublicBucket = async () => {
@@ -129,7 +136,7 @@ export const uploadImage = async (file: File): Promise<string> => {
   }
 };
 
-export const createItem = async (item: Omit<Item, 'created_at' | 'id' | 'user_id' | 'owner_id'>) => {
+export const createItem = async (item: CreateItemData) => {
   // Check authentication status
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
   if (!session || sessionError) {
@@ -149,12 +156,15 @@ export const createItem = async (item: Omit<Item, 'created_at' | 'id' | 'user_id
       throw new Error('Location is required');
     }
 
+    // Extract location-specific fields that shouldn't be in the items table
+    const { latitude, longitude, ...itemData } = item;
+
     // Create the item with all required fields
     const { data, error } = await supabase
       .from('items')
       .insert([
         {
-          ...item, // Include all item fields
+          ...itemData, // Include all item fields except latitude/longitude
           user_id: user.id,
           owner_id: user.id,
           status: item.status || 'available',

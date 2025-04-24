@@ -34,6 +34,9 @@ interface DatabaseItem {
   category: string;
   price_per_day: number;
   location: string;
+  location_id: string | null;
+  latitude: number | null;
+  longitude: number | null;
   photos: string[];
   owner_id: string;
   created_at: string;
@@ -55,6 +58,9 @@ interface Item {
   category: string;
   price_per_day: number;
   location: string;
+  location_id: string | null;
+  latitude: number | null;
+  longitude: number | null;
   image_url: string;
   owner_id: string;
   created_at: string;

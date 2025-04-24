@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Calendar } from 'lucide-react';
-import { uploadImage, createItem, supabase, ensurePublicBucket } from '../lib/supabase';
+import { uploadImage, createItem, supabase, ensurePublicBucket, CreateItemData } from '../lib/supabase';
+import LocationSelect from '../components/LocationSelect';
+
+interface Location {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
 
 interface FormData {
   name: string;
@@ -9,6 +17,9 @@ interface FormData {
   price_per_day: number;
   category: string;
   location: string;
+  location_id: string | null;
+  latitude: number | null;
+  longitude: number | null;
   startDate: string;
   endDate: string;
 }
@@ -26,6 +37,9 @@ const ListItem: React.FC = () => {
     price_per_day: 0,
     category: '',
     location: '',
+    location_id: null,
+    latitude: null,
+    longitude: null,
     startDate: '',
     endDate: ''
   });
@@ -101,17 +115,22 @@ const ListItem: React.FC = () => {
       console.log('Image uploaded successfully:', imageUrl);
 
       // Create item with the image URL
-      const result = await createItem({
+      const itemData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
         price_per_day: parseFloat(formData.price_per_day.toString()),
         category: formData.category,
         location: formData.location.trim(),
+        location_id: formData.location_id,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
         image_url: imageUrl,
-        status: 'available',
+        status: 'available' as const,
         start_date: formData.startDate,
         end_date: formData.endDate,
-      });
+      };
+
+      const result = await createItem(itemData);
 
       console.log('Item created successfully:', result);
       navigate('/dashboard');
@@ -214,14 +233,28 @@ const ListItem: React.FC = () => {
           <label className="block text-gray-700 text-sm font-bold mb-2">
             Location
           </label>
-          <input
-            type="text"
-            value={formData.location}
-            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter the item's location"
-            required
-            disabled={loading}
+          <LocationSelect
+            onLocationSelect={(location) => {
+              if (location) {
+                setFormData({
+                  ...formData,
+                  location: location.name,
+                  location_id: location.id,
+                  latitude: location.latitude,
+                  longitude: location.longitude
+                });
+              } else {
+                setFormData({
+                  ...formData,
+                  location: '',
+                  location_id: null,
+                  latitude: null,
+                  longitude: null
+                });
+              }
+            }}
+            defaultValue={formData.location}
+            className="w-full"
           />
         </div>
 

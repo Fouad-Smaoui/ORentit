@@ -17,6 +17,9 @@ interface Item {
   category: string;
   price_per_day: number;
   location: string;
+  location_id: string | null;
+  latitude: number | null;
+  longitude: number | null;
   owner_id: string;
   image_url: string;
   profiles: {
