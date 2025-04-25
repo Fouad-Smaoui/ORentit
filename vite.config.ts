@@ -10,6 +10,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    include: ['@stripe/stripe-js', '@stripe/react-stripe-js']
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
@@ -18,6 +21,10 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom']
+        },
+        globals: {
+          '@stripe/stripe-js': 'Stripe',
+          '@stripe/react-stripe-js': 'ReactStripe'
         }
       }
     }

@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
-import {
-  Elements,
-  PaymentElement,
-  useStripe,
-  useElements
-} from '@stripe/react-stripe-js';
 import { supabase } from '../lib/supabase';
 
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// Load Stripe dynamically
+const loadStripe = async () => {
+  const { loadStripe } = await import('@stripe/stripe-js');
+  return loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+};
+
+const stripePromise = loadStripe();
 
 interface PaymentFormProps {
   clientSecret: string;
@@ -20,10 +18,25 @@ interface PaymentFormProps {
 }
 
 function PaymentForm({ clientSecret, bookingId, amount, onSuccess }: PaymentFormProps) {
-  const stripe = useStripe();
-  const elements = useElements();
+  const [stripeElements, setStripeElements] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    const loadStripeElements = async () => {
+      const { Elements, PaymentElement, useStripe, useElements } = await import('@stripe/react-stripe-js');
+      setStripeElements({ Elements, PaymentElement, useStripe, useElements });
+    };
+    loadStripeElements();
+  }, []);
+
+  if (!stripeElements) {
+    return <div>Loading payment form...</div>;
+  }
+
+  const { Elements, PaymentElement, useStripe, useElements } = stripeElements;
+  const stripe = useStripe();
+  const elements = useElements();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
