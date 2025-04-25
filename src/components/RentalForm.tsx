@@ -5,6 +5,7 @@ import { DateRange, Range } from 'react-date-range';
 import { addDays, isWithinInterval, parse, format } from 'date-fns';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
+import { useNavigate } from 'react-router-dom';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -28,6 +29,7 @@ export function RentalForm({
   availableStartDate,
   availableEndDate 
 }: RentalFormProps) {
+  const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<Range>({
     startDate: new Date(availableStartDate),
     endDate: new Date(availableStartDate),
@@ -75,21 +77,22 @@ export function RentalForm({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('You must be logged in to rent an item');
 
-      // Check if there are any overlapping rentals
-      const { data: existingRentals, error: rentalsError } = await supabase
-        .from('rentals')
+      // Check if there are any overlapping bookings
+      const { data: existingBookings, error: bookingsError } = await supabase
+        .from('bookings')
         .select('*')
         .eq('item_id', itemId)
         .or(`start_date.lte.${format(dateRange.endDate, 'yyyy-MM-dd')},end_date.gte.${format(dateRange.startDate, 'yyyy-MM-dd')}`)
         .not('status', 'eq', 'cancelled');
 
-      if (rentalsError) throw rentalsError;
-      if (existingRentals && existingRentals.length > 0) {
+      if (bookingsError) throw bookingsError;
+      if (existingBookings && existingBookings.length > 0) {
         throw new Error('These dates are not available. Please select different dates.');
       }
 
-      const { error: insertError } = await supabase
-        .from('rentals')
+      // Create the booking
+      const { data: booking, error: insertError } = await supabase
+        .from('bookings')
         .insert({
           item_id: itemId,
           renter_id: user.id,
@@ -97,10 +100,20 @@ export function RentalForm({
           end_date: format(dateRange.endDate, 'yyyy-MM-dd'),
           total_price: calculateTotalPrice(),
           status: 'pending'
-        });
+        })
+        .select()
+        .single();
 
       if (insertError) throw insertError;
+      if (!booking) throw new Error('Failed to create booking');
+
+      // Close the modal
       onSuccess();
+      
+      // Navigate to payment page
+      navigate(`/payment/${booking.id}`, {
+        state: { amount: booking.total_price }
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

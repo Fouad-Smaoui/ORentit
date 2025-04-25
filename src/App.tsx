@@ -10,6 +10,7 @@ import ItemDetail from './pages/ItemDetail';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import { ItemsPage } from './pages/ItemsPage';
+import PaymentPage from './pages/PaymentPage';
 import { ensurePublicBucket, supabase } from './lib/supabase';
 
 const App = () => {
@@ -74,6 +75,14 @@ const App = () => {
                 }
               />
               <Route path="/items" element={<ItemsPage />} />
+              <Route
+                path="/payment/:bookingId"
+                element={
+                  <PrivateRoute>
+                    <PaymentPage />
+                  </PrivateRoute>
+                }
+              />
             </Routes>
           </main>
         </div>
