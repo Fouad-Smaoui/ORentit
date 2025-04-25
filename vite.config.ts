@@ -14,7 +14,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
-      external: ['@stripe/stripe-js'],
+      external: ['@stripe/stripe-js', '@stripe/react-stripe-js'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom']
