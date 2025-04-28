@@ -44,30 +44,14 @@ const ListItem: React.FC = () => {
     endDate: ''
   });
 
-  // Check authentication and initialize storage on component mount
+  // Only check authentication status for UI (not for redirect)
   useEffect(() => {
-    const initializeComponent = async () => {
-      try {
-        const { data: { session }, error: authError } = await supabase.auth.getSession();
-        if (!session || authError) {
-          console.error('Authentication error:', authError);
-          setError('You must be logged in to list items');
-          navigate('/auth');
-          return;
-        }
-
-        setIsAuthenticated(true);
-        
-        // Initialize storage bucket
-        await ensurePublicBucket();
-      } catch (error) {
-        console.error('Initialization error:', error);
-        setError('Failed to initialize. Please try again.');
-      }
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
     };
-
-    initializeComponent();
-  }, [navigate]);
+    checkAuth();
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -90,23 +74,26 @@ const ListItem: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isAuthenticated) {
-      setError('You must be logged in to list items');
-      navigate('/auth');
-      return;
-    }
-
-    setLoading(true);
     setError('');
-
+    setLoading(true);
     try {
+      // Check authentication on submit
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setError('You must be logged in to list items');
+        setLoading(false);
+        return;
+      }
+
       if (!formData.name || !formData.price_per_day || !formData.category || !formData.startDate || !formData.endDate || !formData.location) {
         setError('Please fill in all required fields');
+        setLoading(false);
         return;
       }
 
       if (!imageFile) {
         setError('Please select an image');
+        setLoading(false);
         return;
       }
 
@@ -157,14 +144,6 @@ const ListItem: React.FC = () => {
     });
   };
 
-  if (!isAuthenticated) {
-    return <div className="container mx-auto px-4 py-8">
-      <div className="text-center">
-        <p className="text-red-600">Please log in to list items</p>
-      </div>
-    </div>;
-  }
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">List New Item</h1>
@@ -187,8 +166,8 @@ const ListItem: React.FC = () => {
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-full file:border-0
                 file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100"
+                file:bg-[#a100ff] file:text-white
+                hover:file:bg-opacity-90"
               disabled={loading}
             />
             {previewUrl && (
@@ -333,13 +312,24 @@ const ListItem: React.FC = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className={`w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={loading}
-        >
-          {loading ? 'Creating...' : 'Create Listing'}
-        </button>
+        <div className="flex flex-col md:flex-row gap-4 mt-6">
+          <button
+            type="submit"
+            className={`w-full bg-[#a100ff] text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={loading}
+          >
+            {loading ? 'Creating...' : 'Create Listing'}
+          </button>
+          {!isAuthenticated && (
+            <button
+              type="button"
+              className="w-full bg-[#a100ff] text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors border border-[#a100ff]"
+              onClick={() => navigate('/auth')}
+            >
+              Login to continue
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
