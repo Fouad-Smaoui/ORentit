@@ -220,7 +220,11 @@ export const getItems = async (filters?: {
 }) => {
   let query = supabase
     .from('items')
-    .select('*, profiles(username, avatar_url)')
+    .select(`
+      *,
+      profiles(username, avatar_url),
+      locations(latitude, longitude)
+    `)
     .eq('status', 'available');
 
   if (filters?.category) {

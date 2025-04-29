@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { MapPin, Calendar, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { BookingModal } from '../components/BookingModal';
+import { calculateDistance, getUserLocation, formatDistance } from '../lib/location';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -17,9 +18,7 @@ interface Item {
   category: string;
   price_per_day: number;
   location: string;
-  location_id: string | null;
-  latitude: number | null;
-  longitude: number | null;
+  location_id: string;
   image_url: string;
   owner_id: string;
   start_date: string;
@@ -27,6 +26,10 @@ interface Item {
   profiles: {
     username: string;
     avatar_url: string | null;
+  };
+  locations: {
+    latitude: number;
+    longitude: number;
   };
 }
 
@@ -37,6 +40,7 @@ export default function ItemDetail() {
   const [error, setError] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [distance, setDistance] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchItem() {
@@ -50,6 +54,10 @@ export default function ItemDetail() {
             profiles (
               username,
               avatar_url
+            ),
+            locations (
+              latitude,
+              longitude
             )
           `)
           .eq('id', id)
@@ -68,6 +76,29 @@ export default function ItemDetail() {
 
     fetchItem();
   }, [id]);
+
+  useEffect(() => {
+    async function getDistance() {
+      if (item?.locations?.latitude && item?.locations?.longitude) {
+        try {
+          const position = await getUserLocation();
+          const dist = calculateDistance(
+            position.coords.latitude,
+            position.coords.longitude,
+            item.locations.latitude,
+            item.locations.longitude
+          );
+          setDistance(dist);
+        } catch (error) {
+          console.error('Error getting location:', error);
+        }
+      }
+    }
+
+    if (item) {
+      getDistance();
+    }
+  }, [item?.locations?.latitude, item?.locations?.longitude]);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.currentTarget;
@@ -132,6 +163,9 @@ export default function ItemDetail() {
                 <div className="flex items-center text-gray-500">
                   <MapPin className="w-5 h-5 mr-2" />
                   <span>{item.location}</span>
+                  {distance !== null && (
+                    <span className="ml-1 text-gray-400">• {formatDistance(distance)} away</span>
+                  )}
                 </div>
                 <div className="flex items-center text-gray-500">
                   <Calendar className="w-5 h-5 mr-2" />

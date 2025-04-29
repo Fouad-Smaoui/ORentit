@@ -13,15 +13,60 @@ import { ItemsPage } from './pages/ItemsPage';
 import PaymentPage from './pages/PaymentPage';
 import { ensurePublicBucket, supabase } from './lib/supabase';
 
+// Debug log for initial render
+console.log('App component initializing');
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
+            <pre className="text-sm text-gray-600">{this.state.error?.toString()}</pre>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 const App = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    console.log('App useEffect running');
     // Check authentication and initialize storage
     const initApp = async () => {
       try {
+        console.log('Initializing app...');
         // Check if user is authenticated
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('Auth session:', session ? 'exists' : 'none');
         
         // Only try to initialize storage if user is authenticated
         if (session) {
@@ -34,6 +79,7 @@ const App = () => {
         console.error('Failed to initialize app:', error);
       } finally {
         setIsInitialized(true);
+        console.log('App initialization complete');
       }
     };
     
@@ -48,46 +94,44 @@ const App = () => {
   }
 
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Navbar />
-          <main>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/items/:id" element={<ItemDetail />} />
-              <Route
-                path="/list-item"
-                element={
-                  <PrivateRoute>
-                    <ListItem />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                }
-              />
-              <Route path="/items" element={<ItemsPage />} />
-              <Route
-                path="/payment/:bookingId"
-                element={
-                  <PrivateRoute>
-                    <PaymentPage />
-                  </PrivateRoute>
-                }
-              />
-            </Routes>
-          </main>
-        </div>
-      </Router>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Navbar />
+            <main>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/items/:id" element={<ItemDetail />} />
+                <Route
+                  path="/list-item"
+                  element={<ListItem />}
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route path="/items" element={<ItemsPage />} />
+                <Route
+                  path="/payment/:bookingId"
+                  element={
+                    <PrivateRoute>
+                      <PaymentPage />
+                    </PrivateRoute>
+                  }
+                />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 

@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import { Button } from './ui/button';
+import { useState, useEffect } from 'react';
+import { calculateDistance, getUserLocation, formatDistance } from '../lib/location';
 
 interface Item {
   id: string;
@@ -9,14 +11,16 @@ interface Item {
   category: string;
   price_per_day: number;
   location: string;
-  location_id: string | null;
-  latitude: number | null;
-  longitude: number | null;
+  location_id: string;
   image_url: string;
   owner_id: string;
   profiles: {
     username: string;
     avatar_url: string | null;
+  };
+  locations: {
+    latitude: number;
+    longitude: number;
   };
 }
 
@@ -25,6 +29,28 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item }: ItemCardProps) {
+  const [distance, setDistance] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function getDistance() {
+      if (item.locations?.latitude && item.locations?.longitude) {
+        try {
+          const position = await getUserLocation();
+          const dist = calculateDistance(
+            position.coords.latitude,
+            position.coords.longitude,
+            item.locations.latitude,
+            item.locations.longitude
+          );
+          setDistance(dist);
+        } catch (error) {
+          console.error('Error getting location:', error);
+        }
+      }
+    }
+    getDistance();
+  }, [item.locations?.latitude, item.locations?.longitude]);
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.currentTarget;
     const fallbackUrl = `https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop`;
@@ -56,6 +82,9 @@ export function ItemCard({ item }: ItemCardProps) {
             <div className="flex items-center text-gray-500 text-sm">
               <MapPin size={16} className="mr-1" />
               <span>{item.location}</span>
+              {distance !== null && (
+                <span className="ml-1 text-gray-400">• {formatDistance(distance)} away</span>
+              )}
             </div>
             <Button variant="secondary" size="sm">
               View Details
