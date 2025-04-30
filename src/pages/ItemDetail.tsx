@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
-import { MapPin, Calendar, User } from 'lucide-react';
+import { MapPin, Calendar, User, Share2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { BookingModal } from '../components/BookingModal';
+import { ShareModal } from '../components/ShareModal';
 import { calculateDistance, getUserLocation, formatDistance } from '../lib/location';
 
 const supabase = createClient(
@@ -40,6 +41,7 @@ export default function ItemDetail() {
   const [error, setError] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [distance, setDistance] = useState<number | null>(null);
 
   useEffect(() => {
@@ -154,10 +156,19 @@ export default function ItemDetail() {
 
             {/* Item Details */}
             <div className="space-y-6">
-              <div>
+              <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold text-gray-900">{item.name}</h1>
-                <p className="mt-2 text-gray-500">{item.description}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 hover:bg-gray-100"
+                  onClick={() => setIsShareModalOpen(true)}
+                >
+                  <Share2 className="h-5 w-5" />
+                  Share
+                </Button>
               </div>
+              <p className="mt-2 text-gray-500">{item.description}</p>
 
               <div className="flex items-center space-x-4">
                 <div className="flex items-center text-gray-500">
@@ -199,6 +210,13 @@ export default function ItemDetail() {
         pricePerDay={item.price_per_day}
         startDate={item.start_date}
         endDate={item.end_date}
+      />
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        itemId={item.id}
+        itemName={item.name}
       />
     </div>
   );
