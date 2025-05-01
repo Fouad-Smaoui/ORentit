@@ -8,19 +8,19 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@stripe/stripe-js': path.resolve(__dirname, 'node_modules/@stripe/stripe-js'),
+      '@stripe/react-stripe-js': path.resolve(__dirname, 'node_modules/@stripe/react-stripe-js')
     },
+  },
+  optimizeDeps: {
+    include: ['@stripe/stripe-js', '@stripe/react-stripe-js']
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
-    rollupOptions: {
-      external: ['@stripe/stripe-js', '@stripe/react-stripe-js'],
-      output: {
-        globals: {
-          '@stripe/stripe-js': 'Stripe',
-          '@stripe/react-stripe-js': 'ReactStripe'
-        }
-      }
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true
     }
   }
 });

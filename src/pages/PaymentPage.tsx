@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { loadStripe } from '@stripe/stripe-js';
 import {
+  Elements,
   CardElement,
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
-import stripePromise, { Elements } from '../lib/stripe';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -314,24 +317,14 @@ export default function PaymentPage() {
   }
 
   return (
-    <Elements stripe={stripePromise} options={{ 
-      clientSecret,
-      appearance: {
-        theme: 'stripe',
-        variables: {
-          colorPrimary: '#a100ff',
-        },
-      },
-    }}>
-      <div className="min-h-screen bg-gray-50 py-12">
-        <PaymentForm
-          clientSecret={clientSecret}
-          bookingId={bookingId!}
-          amount={bookingDetails.total_price}
-          onSuccess={handlePaymentSuccess}
-          bookingDetails={bookingDetails}
-        />
-      </div>
-    </Elements>
+    <div className="min-h-screen bg-gray-50 py-12">
+      <PaymentForm
+        clientSecret={clientSecret}
+        bookingId={bookingId!}
+        amount={bookingDetails.total_price}
+        onSuccess={handlePaymentSuccess}
+        bookingDetails={bookingDetails}
+      />
+    </div>
   );
 } 
