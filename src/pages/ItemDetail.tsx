@@ -210,6 +210,7 @@ export default function ItemDetail() {
         pricePerDay={item.price_per_day}
         startDate={item.start_date}
         endDate={item.end_date}
+        itemName={item.name}
       />
 
       <ShareModal

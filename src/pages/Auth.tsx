@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Mail, Lock, AlertCircle, User } from 'lucide-react';
 
@@ -12,6 +12,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,17 +26,21 @@ const Auth = () => {
         await signIn(email, password);
         // Small delay to ensure state is updated
         setTimeout(() => {
-          navigate('/');
+          // Check if we should redirect back to checkout
+          const from = location.state?.from;
+          navigate(from || '/');
         }, 100);
       } else {
         // For sign up, generate a username from email if not provided
         const defaultUsername = email.split('@')[0];
-        await signUp(email, password, username || defaultUsername);
+        await signUp(email, password);
         // After signup, sign in automatically
         await signIn(email, password);
         // Small delay to ensure state is updated
         setTimeout(() => {
-          navigate('/');
+          // Check if we should redirect back to checkout
+          const from = location.state?.from;
+          navigate(from || '/');
         }, 100);
       }
     } catch (err) {

@@ -10,9 +10,18 @@ interface BookingModalProps {
   pricePerDay: number;
   startDate: string;
   endDate: string;
+  itemName: string;
 }
 
-export function BookingModal({ isOpen, onClose, itemId, pricePerDay, startDate, endDate }: BookingModalProps) {
+export function BookingModal({ 
+  isOpen, 
+  onClose, 
+  itemId, 
+  pricePerDay, 
+  startDate, 
+  endDate,
+  itemName 
+}: BookingModalProps) {
   const handleSuccess = () => {
     onClose();
     // You might want to show a success message or redirect
@@ -50,6 +59,7 @@ export function BookingModal({ isOpen, onClose, itemId, pricePerDay, startDate, 
               onCancel={onClose}
               availableStartDate={startDate}
               availableEndDate={endDate}
+              itemName={itemName}
             />
           </div>
         </Dialog.Panel>

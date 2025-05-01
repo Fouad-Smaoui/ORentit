@@ -1,42 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
+import { loadStripe } from '@stripe/stripe-js';
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
+import { format } from 'date-fns';
+import { ArrowLeft } from 'lucide-react';
 
-// Load Stripe dynamically
-const loadStripe = async () => {
-  const { loadStripe } = await import('@stripe/stripe-js');
-  return loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
+const CARD_ELEMENT_OPTIONS = {
+  style: {
+    base: {
+      fontSize: '16px',
+      color: '#424770',
+      '::placeholder': {
+        color: '#aab7c4',
+      },
+    },
+    invalid: {
+      color: '#9e2146',
+    },
+  },
 };
-
-const stripePromise = loadStripe();
 
 interface PaymentFormProps {
   clientSecret: string;
   bookingId: string;
   amount: number;
   onSuccess: () => void;
+  bookingDetails: any;
 }
 
-function PaymentForm({ clientSecret, bookingId, amount, onSuccess }: PaymentFormProps) {
-  const [stripeElements, setStripeElements] = useState<any>(null);
+function PaymentForm({ clientSecret, bookingId, amount, onSuccess, bookingDetails }: PaymentFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
-
-  useEffect(() => {
-    const loadStripeElements = async () => {
-      const { Elements, PaymentElement, useStripe, useElements } = await import('@stripe/react-stripe-js');
-      setStripeElements({ Elements, PaymentElement, useStripe, useElements });
-    };
-    loadStripeElements();
-  }, []);
-
-  if (!stripeElements) {
-    return <div>Loading payment form...</div>;
-  }
-
-  const { Elements, PaymentElement, useStripe, useElements } = stripeElements;
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,13 +59,14 @@ function PaymentForm({ clientSecret, bookingId, amount, onSuccess }: PaymentForm
     setError(null);
 
     try {
-      const { error: paymentError, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/payment-success`,
-        },
-        redirect: 'if_required',
-      });
+      const { error: paymentError, paymentIntent } = await stripe.confirmCardPayment(
+        clientSecret,
+        {
+          payment_method: {
+            card: elements.getElement(CardElement)!,
+          },
+        }
+      );
 
       if (paymentError) {
         setError(paymentError.message || 'Payment failed');
@@ -102,40 +113,81 @@ function PaymentForm({ clientSecret, bookingId, amount, onSuccess }: PaymentForm
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-2">Payment Details</h3>
-          <p className="text-gray-600">Total Amount: ${amount.toFixed(2)}</p>
+    <div className="max-w-6xl mx-auto px-4">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back
+      </button>
+      
+      <h1 className="text-2xl font-bold mb-8">Secure Payment</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Order Summary */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Item:</span>
+              <span>{bookingDetails.items.title}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Dates:</span>
+              <span>
+                {format(new Date(bookingDetails.start_date), 'MM/dd/yyyy')} - {format(new Date(bookingDetails.end_date), 'MM/dd/yyyy')}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>Price per day:</span>
+              <span>${bookingDetails.items.price_per_day.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-semibold border-t pt-4">
+              <span>Total Amount:</span>
+              <span>${amount.toFixed(2)}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="mb-6">
-          <div className="text-sm text-gray-600 mb-4">
-            Test Card Numbers:
-            <ul className="list-disc list-inside mt-2">
-              <li>Success: 4242 4242 4242 4242</li>
-              <li>Decline: 4000 0000 0000 0002</li>
-            </ul>
-          </div>
-          <PaymentElement />
+        {/* Payment Form */}
+        <div>
+          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-6">Payment Details</h2>
+            <div className="mb-6">
+              <p className="text-gray-600 mb-4">Total Amount: ${amount.toFixed(2)}</p>
+              
+              <div className="text-sm text-gray-600 mb-4">
+                <p className="font-medium mb-2">Test Card Numbers:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Success: 4242 4242 4242 4242</li>
+                  <li>Decline: 4000 0000 0000 0002</li>
+                </ul>
+              </div>
+
+              <div className="border rounded-lg p-4">
+                <CardElement options={CARD_ELEMENT_OPTIONS} />
+              </div>
+            </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={!stripe || processing}
+              className={`w-full py-3 px-4 bg-[#a100ff] text-white rounded-lg font-medium
+                ${(!stripe || processing) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}
+            >
+              {processing ? 'Processing...' : 'Pay Now'}
+            </button>
+          </form>
         </div>
-
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md">
-            {error}
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={!stripe || processing}
-          className={`w-full mt-6 py-3 px-4 bg-[#a100ff] text-white rounded-lg font-medium
-            ${(!stripe || processing) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}
-        >
-          {processing ? 'Processing...' : 'Pay Now'}
-        </button>
       </div>
-    </form>
+    </div>
   );
 }
 
@@ -145,7 +197,6 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(true);
   const [bookingDetails, setBookingDetails] = useState<any>(null);
   const navigate = useNavigate();
-  const location = useLocation();
   const { bookingId } = useParams<{ bookingId: string }>();
 
   useEffect(() => {
@@ -218,7 +269,6 @@ export default function PaymentPage() {
           throw new Error('Failed to create payment record');
         }
 
-        // Only set client secret if payment record was created successfully
         setClientSecret(clientSecret);
       } catch (err) {
         console.error('Payment initialization error:', err);
@@ -267,74 +317,24 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate(-1)}
-              className="mr-4 text-gray-600 hover:text-gray-800"
-            >
-              ← Back
-            </button>
-            <h1 className="text-xl font-semibold">Secure Payment</h1>
-          </div>
-        </div>
+    <Elements stripe={stripePromise} options={{ 
+      clientSecret,
+      appearance: {
+        theme: 'stripe',
+        variables: {
+          colorPrimary: '#a100ff',
+        },
+      },
+    }}>
+      <div className="min-h-screen bg-gray-50 py-12">
+        <PaymentForm
+          clientSecret={clientSecret}
+          bookingId={bookingId!}
+          amount={bookingDetails.total_price}
+          onSuccess={handlePaymentSuccess}
+          bookingDetails={bookingDetails}
+        />
       </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Order Summary */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
-            <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Item:</span>
-                <span className="font-medium">{bookingDetails.items.title}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Dates:</span>
-                <span className="font-medium">
-                  {new Date(bookingDetails.start_date).toLocaleDateString()} - {new Date(bookingDetails.end_date).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Price per day:</span>
-                <span className="font-medium">${bookingDetails.items.price_per_day.toFixed(2)}</span>
-              </div>
-              <div className="border-t pt-4 mt-4">
-                <div className="flex justify-between">
-                  <span className="font-semibold">Total Amount:</span>
-                  <span className="font-semibold">${bookingDetails.total_price.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Form */}
-          <Elements
-            stripe={stripePromise}
-            options={{
-              clientSecret,
-              appearance: {
-                theme: 'stripe',
-                variables: {
-                  colorPrimary: '#a100ff',
-                },
-              },
-            }}
-          >
-            <PaymentForm
-              clientSecret={clientSecret}
-              bookingId={bookingId!}
-              amount={bookingDetails.total_price}
-              onSuccess={handlePaymentSuccess}
-            />
-          </Elements>
-        </div>
-      </div>
-    </div>
+    </Elements>
   );
 } 

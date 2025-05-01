@@ -19,6 +19,7 @@ serve(async (req) => {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400',
       }
     })
   }
@@ -56,6 +57,9 @@ serve(async (req) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount), // Stripe expects amount in cents
       currency: 'usd',
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: {
         bookingId,
         itemId,
@@ -76,8 +80,11 @@ serve(async (req) => {
       }
     )
   } catch (error) {
+    console.error('Payment intent creation error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'An unexpected error occurred'
+      }),
       {
         status: 400,
         headers: {
