@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
-import { loadStripe } from '@stripe/stripe-js';
 import {
   Elements,
   CardElement,
@@ -10,8 +9,7 @@ import {
 } from '@stripe/react-stripe-js';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+import stripePromise from '../lib/stripe';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
