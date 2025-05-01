@@ -38,18 +38,42 @@ export function ShareModal({ isOpen, onClose, itemId, itemName }: ShareModalProp
   };
 
   const handleMessenger = () => {
-    const messengerUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(itemUrl)}&app_id=YOUR_FB_APP_ID`;
-    window.open(messengerUrl);
+    // Using Facebook's Send Dialog for Messenger
+    const messengerUrl = `https://www.facebook.com/dialog/send?app_id=254752783349744&link=${encodeURIComponent(itemUrl)}&redirect_uri=${encodeURIComponent(window.location.href)}`;
+    
+    // Open in a popup window
+    const width = 550;
+    const height = 435;
+    const left = Math.floor((window.screen.width / 2) - (width / 2));
+    const top = Math.floor((window.screen.height / 2) - (height / 2));
+    
+    window.open(
+      messengerUrl,
+      'messenger_share',
+      `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no`
+    );
   };
 
   const handleFacebook = () => {
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(itemUrl)}`;
-    window.open(facebookUrl);
+    // Using Facebook's Share Dialog
+    const facebookUrl = `https://www.facebook.com/dialog/share?app_id=254752783349744&href=${encodeURIComponent(itemUrl)}&quote=${encodeURIComponent(shareText)}&redirect_uri=${encodeURIComponent(window.location.href)}`;
+    
+    // Open in a popup window
+    const width = 550;
+    const height = 435;
+    const left = Math.floor((window.screen.width / 2) - (width / 2));
+    const top = Math.floor((window.screen.height / 2) - (height / 2));
+    
+    window.open(
+      facebookUrl,
+      'facebook_share',
+      `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no`
+    );
   };
 
-  const handleTwitter = () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(itemUrl)}`;
-    window.open(twitterUrl);
+  const handleX = () => {
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(itemUrl)}`;
+    window.open(xUrl);
   };
 
   return (
@@ -102,10 +126,10 @@ export function ShareModal({ isOpen, onClose, itemId, itemName }: ShareModalProp
           <Button
             variant="outline"
             className="flex items-center justify-start gap-3 hover:bg-purple-50"
-            onClick={handleTwitter}
+            onClick={handleX}
           >
             <FaTwitter className="h-5 w-5 text-[#a100ff]" />
-            <span className="text-gray-700">Twitter</span>
+            <span className="text-gray-700">X</span>
           </Button>
         </div>
       </DialogContent>

@@ -3,6 +3,7 @@ import { Search, MapPin, Car, Tent } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import ItemCard from '../components/ItemCard';
 import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '../components/ui/button';
 
 // Debug logs for environment variables
 console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
@@ -37,6 +38,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     console.log('useEffect running');
@@ -68,6 +70,13 @@ const Home = () => {
 
   console.log('Current state - loading:', loading, 'items:', items);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   return (
     <div>
       {/* Hero Section */}
@@ -86,20 +95,26 @@ const Home = () => {
           <p className="text-white text-xl mb-8 max-w-2xl">
             Join our community of renters and owners. Share your items or find exactly what you need.
           </p>
-          <div className="flex gap-4">
-            <Link
-              to="/search"
-              className="bg-white text-gray-900 px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              Start Browsing
-            </Link>
-            <Link
-              to="/list-item"
-              className="bg-[#a100ff] text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-opacity-90 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              List Your Item
-            </Link>
-          </div>
+          
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="w-full max-w-2xl mb-8">
+            <div className="relative flex items-center">
+              <Search className="absolute left-6 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="What are you looking for?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-16 pr-32 py-4 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-[#a100ff] focus:ring-opacity-50 shadow-lg bg-white/95 backdrop-blur-sm"
+              />
+              <Button
+                type="submit"
+                className="absolute right-2 px-8 py-2.5 bg-[#a100ff] text-white rounded-full text-lg font-medium hover:bg-opacity-90 transition-all duration-200"
+              >
+                Go!
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
 

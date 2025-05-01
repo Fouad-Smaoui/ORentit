@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import ListItem from './pages/ListItem';
@@ -97,9 +98,9 @@ const App = () => {
     <ErrorBoundary>
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50">
+          <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main>
+            <main className="flex-grow pt-16 bg-gray-50">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
@@ -128,6 +129,7 @@ const App = () => {
                 />
               </Routes>
             </main>
+            <Footer />
           </div>
         </Router>
       </AuthProvider>
