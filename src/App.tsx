@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -48,12 +48,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
             <pre className="text-sm text-gray-600">{this.state.error?.toString()}</pre>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-[#a100ff] text-white rounded-lg hover:bg-opacity-90"
-            >
-              Reload Page
-            </button>
           </div>
         </div>
       );
@@ -113,7 +107,10 @@ const App = () => {
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/items/:id" element={<ItemDetail />} />
-                <Route path="/list-item" element={<ListItem />} />
+                <Route
+                  path="/list-item"
+                  element={<ListItem />}
+                />
                 <Route
                   path="/dashboard"
                   element={
@@ -132,8 +129,6 @@ const App = () => {
                     </PrivateRoute>
                   }
                 />
-                {/* Catch all route - redirect to home */}
-                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
             <Footer />
