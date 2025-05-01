@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import {
-  Elements,
   CardElement,
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
 import { format } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
-import stripePromise from '../lib/stripe';
+import stripePromise, { Elements } from '../lib/stripe';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
