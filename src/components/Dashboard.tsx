@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { 
   Home, 
   Package, 
@@ -7,18 +6,9 @@ import {
   Settings, 
   Bell, 
   User,
-  Search,
-  Plus
+  ChevronDown,
+  Search
 } from 'lucide-react';
-import { getUserItems } from '../lib/supabase';
-
-interface UserItem {
-  id: string;
-  name: string;
-  price_per_day: number;
-  status: 'available' | 'rented' | 'unavailable';
-  image_url?: string;
-}
 
 interface StatCardProps {
   title: string;
@@ -41,26 +31,8 @@ const StatCard = ({ title, value, change, isPositive }: StatCardProps) => (
   </div>
 );
 
-const Dashboard: React.FC = () => {
-  const [userItems, setUserItems] = useState<UserItem[]>([]);
-  const [loading, setLoading] = useState(true);
+const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  useEffect(() => {
-    const fetchUserItems = async () => {
-      try {
-        setLoading(true);
-        const items = await getUserItems();
-        setUserItems(items || []);
-      } catch (error) {
-        console.error('Error fetching user items:', error);
-        setUserItems([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserItems();
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -129,114 +101,83 @@ const Dashboard: React.FC = () => {
       <main className={`pt-16 ${isSidebarOpen ? 'pl-64' : 'pl-0'} transition-all duration-200 ease-in-out`}>
         <div className="px-4 sm:px-6 lg:px-8 py-8">
           {/* Search Bar */}
-          <div className="flex justify-between items-center mb-8">
-            <div className="max-w-xl flex-1 mr-4">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#a100ff] focus:border-[#a100ff] sm:text-sm"
-                  placeholder="Search listings, bookings, or users..."
-                />
+          <div className="max-w-2xl mb-8">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
               </div>
+              <input
+                type="text"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#a100ff] focus:border-[#a100ff] sm:text-sm"
+                placeholder="Search listings, bookings, or users..."
+              />
             </div>
-            <Link
-              to="/list-item"
-              className="inline-flex items-center px-4 py-2 bg-[#a100ff] text-white rounded-lg hover:bg-[#8a00d4] focus:outline-none focus:ring-2 focus:ring-[#a100ff]"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              List New Item
-            </Link>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
             <StatCard
               title="Active Listings"
-              value={userItems.filter(item => item.status === 'available').length}
-              change=""
+              value="12"
+              change="+2"
               isPositive={true}
             />
             <StatCard
               title="Total Bookings"
-              value="-"
-              change=""
+              value="48"
+              change="+12%"
               isPositive={true}
             />
             <StatCard
               title="Revenue"
-              value="-"
-              change=""
+              value="$2,450"
+              change="+8%"
               isPositive={true}
             />
             <StatCard
               title="Pending Requests"
-              value="-"
-              change=""
+              value="3"
+              change="-1"
               isPositive={false}
             />
           </div>
 
-          {/* Items Grid */}
-          {loading ? (
-            <div className="animate-pulse space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-24 bg-gray-200 rounded"></div>
-              ))}
+          {/* Recent Activity */}
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
             </div>
-          ) : userItems.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
-              <h2 className="text-2xl font-semibold text-gray-700 mb-4">No Items Listed</h2>
-              <p className="text-gray-500 mb-6">You haven't listed any items yet.</p>
-              <Link
-                to="/list-item"
-                className="inline-flex items-center px-6 py-3 bg-[#a100ff] text-white rounded-lg hover:bg-[#8a00d4] focus:outline-none focus:ring-2 focus:ring-[#a100ff]"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                List Your First Item
-              </Link>
-            </div>
-          ) : (
-            <div className="bg-white shadow rounded-lg">
-              <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">My Listings</h3>
-              </div>
-              <div className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {userItems.map((item) => (
-                    <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-                      {item.image_url && (
-                        <img
-                          src={item.image_url}
-                          alt={item.name}
-                          className="w-full h-48 object-cover"
-                        />
-                      )}
-                      <div className="p-4">
-                        <h3 className="text-xl font-semibold mb-2">{item.name}</h3>
-                        <p className="text-gray-600 mb-4">${item.price_per_day.toFixed(2)}</p>
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm bg-green-100 text-green-800`}
-                          >
-                            Active
-                          </span>
-                          <Link
-                            to={`/items/${item.id}`}
-                            className="text-[#a100ff] hover:text-[#8a00d4]"
-                          >
-                            View Details
-                          </Link>
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flow-root">
+                <ul className="-mb-8">
+                  {[1, 2, 3].map((item) => (
+                    <li key={item}>
+                      <div className="relative pb-8">
+                        <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+                        <div className="relative flex space-x-3">
+                          <div>
+                            <span className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center ring-8 ring-white">
+                              <Package className="h-5 w-5 text-[#a100ff]" />
+                            </span>
+                          </div>
+                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                            <div>
+                              <p className="text-sm text-gray-500">
+                                New booking request for <span className="font-medium text-gray-900">Camera Lens 24-70mm</span>
+                              </p>
+                            </div>
+                            <div className="text-right text-sm whitespace-nowrap text-gray-500">
+                              <time dateTime="2024-03-20">20 minutes ago</time>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </main>
     </div>
