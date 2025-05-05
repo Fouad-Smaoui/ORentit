@@ -71,6 +71,12 @@ const Navbar = () => {
                 >
                   <User className="h-5 w-5 text-gray-600 hover:text-[#a100ff]" />
                 </Link>
+                <Link
+                  to="/profile"
+                  className="flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-full border border-gray-200 hover:border-gray-300 transition-all duration-200"
+                >
+                  <User className="h-5 w-5 text-gray-600 hover:text-[#a100ff]" />
+                </Link>
                 <button
                   onClick={handleSignOut}
                   disabled={isSigningOut}

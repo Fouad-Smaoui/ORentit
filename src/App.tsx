@@ -13,6 +13,8 @@ import PrivateRoute from './components/PrivateRoute';
 import { ItemsPage } from './pages/ItemsPage';
 import PaymentPage from './pages/PaymentPage';
 import Checkout from './pages/Checkout';
+import Profile from './pages/Profile';
+import ResetPassword from './pages/ResetPassword';
 import { ensurePublicBucket, supabase } from './lib/supabase';
 
 // Debug log for initial render
@@ -105,11 +107,17 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/reset-password" element={<ResetPassword />} />
                 <Route path="/search" element={<Search />} />
-                <Route path="/items/:id" element={<ItemDetail />} />
+                <Route path="/items" element={<ItemsPage />} />
+                <Route path="/item/:id" element={<ItemDetail />} />
                 <Route
                   path="/list-item"
-                  element={<ListItem />}
+                  element={
+                    <PrivateRoute>
+                      <ListItem />
+                    </PrivateRoute>
+                  }
                 />
                 <Route
                   path="/dashboard"
@@ -119,8 +127,22 @@ const App = () => {
                     </PrivateRoute>
                   }
                 />
-                <Route path="/items" element={<ItemsPage />} />
-                <Route path="/checkout" element={<Checkout />} />
+                <Route
+                  path="/profile"
+                  element={
+                    <PrivateRoute>
+                      <Profile />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <PrivateRoute>
+                      <Checkout />
+                    </PrivateRoute>
+                  }
+                />
                 <Route
                   path="/payment/:bookingId"
                   element={
