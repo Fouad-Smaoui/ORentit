@@ -15,6 +15,13 @@ import PaymentPage from './pages/PaymentPage';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import ResetPassword from './pages/ResetPassword';
+import About from './pages/About';
+import HowItWorks from './pages/HowItWorks';
+import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Cookies from './pages/Cookies';
+import Safety from './pages/Safety';
 import { ensurePublicBucket, supabase } from './lib/supabase';
 
 // Debug log for initial render
@@ -151,6 +158,13 @@ const App = () => {
                     </PrivateRoute>
                   }
                 />
+                <Route path="/about" element={<About />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/cookies" element={<Cookies />} />
+                <Route path="/safety" element={<Safety />} />
               </Routes>
             </main>
             <Footer />

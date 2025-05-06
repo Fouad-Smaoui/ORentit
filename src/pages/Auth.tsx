@@ -137,50 +137,50 @@ const Auth = () => {
 
             {!isResetPassword && (
               <>
-                {!isLogin && (
-                  <div>
-                    <label htmlFor="username" className="sr-only">
-                      Username
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                        id="username"
-                        name="username"
-                        type="text"
-                        autoComplete="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                        placeholder="Username (optional)"
-                      />
-                    </div>
+            {!isLogin && (
+              <div>
+                <label htmlFor="username" className="sr-only">
+                  Username
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-gray-400" />
                   </div>
-                )}
-
-                <div>
-                  <label htmlFor="password" className="sr-only">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                      placeholder="Password"
-                    />
-                  </div>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                    placeholder="Username (optional)"
+                  />
                 </div>
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  placeholder="Password"
+                />
+              </div>
+            </div>
               </>
             )}
           </div>
@@ -217,15 +217,15 @@ const Auth = () => {
               </button>
             ) : (
               <>
-                <button
-                  type="button"
+            <button
+              type="button"
                   onClick={() => handleModeChange(isLogin ? 'signup' : 'login')}
-                  className="text-sm text-primary-600 hover:text-primary-500"
-                >
-                  {isLogin
-                    ? "Don't have an account? Sign up"
-                    : 'Already have an account? Sign in'}
-                </button>
+              className="text-sm text-primary-600 hover:text-primary-500"
+            >
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : 'Already have an account? Sign in'}
+            </button>
                 {isLogin && (
                   <button
                     type="button"
