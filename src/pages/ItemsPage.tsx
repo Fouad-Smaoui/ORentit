@@ -3,6 +3,9 @@ import ItemCard from '../components/ItemCard';
 import { createClient } from '@supabase/supabase-js';
 import { useSearchParams } from 'react-router-dom';
 import { getItems } from '../lib/supabase';
+import Slider from '@mui/material/Slider';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 // Log environment variables for debugging
 console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
@@ -157,28 +160,29 @@ export function ItemsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Add state for price range
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+
   useEffect(() => {
     async function fetchItems() {
       try {
-        console.log('🔍 Starting to fetch items...');
+        setLoading(true);
         const category = searchParams.get('category');
-        
-        // Fetch items with category filter if present
-        const data = await getItems({ category: category || undefined });
-        
-        if (data) {
-          setItems(data);
-        }
+        const [minPrice, maxPrice] = priceRange;
+        const data = await getItems({
+          category: category || undefined,
+          minPrice,
+          maxPrice,
+        });
+        if (data) setItems(data);
       } catch (error) {
-        console.error('Error fetching items:', error);
         setError(error instanceof Error ? error.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
     }
-
     fetchItems();
-  }, [searchParams]);
+  }, [searchParams, priceRange]);
 
   if (loading) {
     return (
@@ -228,11 +232,60 @@ export function ItemsPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{categoryTitle}</h1>
-          <p className="mt-2 text-gray-600">Browse through our collection of items available for rent</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{categoryTitle}</h1>
+            <p className="mt-2 text-gray-600">Browse through our collection of items available for rent</p>
+          </div>
+          {/* Stylish Price Range Filter */}
+          <Box
+            sx={{
+              minWidth: 180,
+              maxWidth: 220,
+              bgcolor: 'white',
+              boxShadow: 3,
+              borderRadius: 3,
+              p: 2,
+              mt: { xs: 6, md: 0 },
+              ml: { md: 6 },
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+            className="transition-shadow duration-300 hover:shadow-lg"
+          >
+            <Typography gutterBottom variant="subtitle2" sx={{ fontWeight: 600, color: '#a100ff', mb: 0.5 }}>
+              Price Range
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1, color: '#555', fontSize: 13 }}>
+              ${priceRange[0]} - ${priceRange[1]}
+            </Typography>
+            <Slider
+              value={priceRange}
+              onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
+              valueLabelDisplay="auto"
+              min={0}
+              max={500}
+              step={1}
+              sx={{
+                color: '#a100ff',
+                width: '90%',
+                '& .MuiSlider-thumb': {
+                  boxShadow: '0 2px 8px rgba(161,0,255,0.15)',
+                  border: '2px solid #a100ff',
+                  width: 18,
+                  height: 18,
+                },
+                '& .MuiSlider-rail': {
+                  opacity: 0.3,
+                },
+                '& .MuiSlider-track': {
+                  border: 'none',
+                },
+              }}
+            />
+          </Box>
         </div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {items.map((item) => (
             <ItemCard
