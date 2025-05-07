@@ -118,14 +118,8 @@ const App = () => {
                 <Route path="/search" element={<Search />} />
                 <Route path="/items" element={<ItemsPage />} />
                 <Route path="/item/:id" element={<ItemDetail />} />
-                <Route
-                  path="/list-item"
-                  element={
-                    <PrivateRoute>
-                      <ListItem />
-                    </PrivateRoute>
-                  }
-                />
+                <Route path="/items/:id" element={<ItemDetail />} />
+                <Route path="/list-item" element={<ListItem />} />
                 <Route
                   path="/dashboard"
                   element={
@@ -142,14 +136,7 @@ const App = () => {
                     </PrivateRoute>
                   }
                 />
-                <Route
-                  path="/checkout"
-                  element={
-                    <PrivateRoute>
-                      <Checkout />
-                    </PrivateRoute>
-                  }
-                />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route
                   path="/payment/:bookingId"
                   element={

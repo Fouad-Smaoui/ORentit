@@ -50,12 +50,15 @@ export default function Checkout() {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
+        // For non-authenticated users, store the rental data and redirect to auth
+        localStorage.setItem('pendingRental', JSON.stringify(rentalData));
         handleLogin();
         return;
       }
 
-      // Create the booking
+      // Create the booking for authenticated users
       const { data: booking, error: insertError } = await supabase
         .from('bookings')
         .insert({
@@ -84,12 +87,12 @@ export default function Checkout() {
     }
   };
 
-  if (loading || !rentalData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#a100ff]"></div>
-      </div>
-    );
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!rentalData) {
+    return <div>No rental data found</div>;
   }
 
   const days = Math.ceil(
@@ -148,17 +151,16 @@ export default function Checkout() {
 
               {/* Login Prompt */}
               {!isAuthenticated && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-2">Login Required</h3>
-                  <p className="text-blue-700 mb-4">
-                    Please log in to complete your rental. Your selected dates and item will be saved.
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                  <p className="text-yellow-700">
+                    You'll need to create an account or sign in to complete your booking.
                   </p>
-                  <Button
+                  <button
                     onClick={handleLogin}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="mt-4 w-full bg-[#a100ff] text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
                   >
-                    Login to Continue
-                  </Button>
+                    Sign in to Continue
+                  </button>
                 </div>
               )}
 
@@ -168,7 +170,7 @@ export default function Checkout() {
                   onClick={handleContinue}
                   className="w-full bg-[#a100ff] hover:bg-opacity-90 text-white"
                 >
-                  Continue to Payment
+                  Proceed to Payment
                 </Button>
               )}
             </div>

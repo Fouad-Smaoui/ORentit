@@ -226,15 +226,34 @@ export default function PaymentPage() {
 
         setBookingDetails(booking);
 
-        // Create payment intent
+        // Check authentication
         const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          // Store the current URL and booking details to redirect back after login
+          localStorage.setItem('pendingPayment', JSON.stringify({
+            bookingId,
+            amount: booking.total_price,
+            itemTitle: booking.items.title,
+            startDate: booking.start_date,
+            endDate: booking.end_date
+          }));
+          navigate('/auth', { 
+            state: { 
+              from: `/payment/${bookingId}`,
+              message: 'Please sign in to complete your payment'
+            } 
+          });
+          return;
+        }
+
+        // Create payment intent
         const response = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-payment-intent`,
           {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session?.access_token}`,
+              'Authorization': `Bearer ${session.access_token}`,
             },
             body: JSON.stringify({
               amount: booking.total_price * 100, // Convert to cents
@@ -279,7 +298,7 @@ export default function PaymentPage() {
     }
 
     initializePayment();
-  }, [bookingId]);
+  }, [bookingId, navigate]);
 
   const handlePaymentSuccess = () => {
     navigate('/payment-success', {

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Mail, Lock, AlertCircle, User, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-const Auth = () => {
+export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [isResetPassword, setIsResetPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -13,58 +13,50 @@ const Auth = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return;
-    
     setError('');
-    setSuccess('');
     setLoading(true);
 
     try {
-      if (isResetPassword) {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/reset-password`,
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
         });
         if (error) throw error;
-        setSuccess('Password reset instructions have been sent to your email.');
-        return;
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
       }
 
-      if (isLogin) {
-        await signIn(email, password);
-        setTimeout(() => {
-          const from = location.state?.from;
-          navigate(from || '/');
-        }, 100);
+      // Check for pending actions after successful authentication
+      const pendingPayment = localStorage.getItem('pendingPayment');
+      const pendingRental = localStorage.getItem('pendingRental');
+      const pendingItem = localStorage.getItem('pendingItem');
+      
+      if (pendingPayment) {
+        const { bookingId } = JSON.parse(pendingPayment);
+        localStorage.removeItem('pendingPayment');
+        navigate(`/payment/${bookingId}`);
+      } else if (pendingRental) {
+        localStorage.removeItem('pendingRental');
+        navigate('/checkout');
+      } else if (pendingItem) {
+        localStorage.removeItem('pendingItem');
+        navigate('/list-item');
       } else {
-        const defaultUsername = email.split('@')[0];
-        await signUp(email, password);
-        await signIn(email, password);
-        setTimeout(() => {
-          const from = location.state?.from;
-          navigate(from || '/');
-        }, 100);
+        // Default redirect
+        navigate('/');
       }
     } catch (err) {
       console.error('Auth error:', err);
-      if (err instanceof Error) {
-        if (err.message.includes('Email not confirmed')) {
-          setError('Please check your email to confirm your account.');
-        } else if (err.message.includes('Invalid login credentials')) {
-          setError('Invalid email or password.');
-        } else if (err.message.includes('User already registered')) {
-          setError('This email is already registered. Please sign in instead.');
-        } else {
-          setError(err.message);
-        }
-      } else {
-        setError('An unexpected error occurred. Please try again.');
-      }
+      setError(err instanceof Error ? err.message : 'An error occurred during authentication');
     } finally {
       setLoading(false);
     }
@@ -111,7 +103,7 @@ const Auth = () => {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleAuth}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">
@@ -242,6 +234,4 @@ const Auth = () => {
       </div>
     </div>
   );
-};
-
-export default Auth;
+}

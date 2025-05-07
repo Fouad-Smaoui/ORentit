@@ -140,7 +140,8 @@ export const createItem = async (item: CreateItemData) => {
   // Check authentication status
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
   if (!session || sessionError) {
-    console.error('No active session found:', sessionError);
+    // Store the item data temporarily in localStorage
+    localStorage.setItem('pendingItem', JSON.stringify(item));
     throw new Error('You must be logged in to create an item');
   }
 
