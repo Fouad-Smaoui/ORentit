@@ -2,14 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useSemanticSearch } from '../hooks/useSemanticSearch';
-import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 import SemanticSearchResults from '../components/SemanticSearchResults';
 
 const Search: React.FC = () => {
   const [searchParams] = useSearchParams();
   const search = useSemanticSearch();
   const ranInitialQuery = useRef(false);
-  useLockBodyScroll(true);
 
   // Support direct links like /search?q=... by running the search once on load.
   useEffect(() => {
