@@ -52,7 +52,7 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         transparent
-          ? 'bg-gradient-to-b from-black/40 via-black/10 to-transparent'
+          ? 'bg-gradient-to-b from-[#4d007a]/60 via-[#a100ff]/20 to-transparent'
           : 'bg-white/95 backdrop-blur-sm border-b border-gray-100'
       } ${isScrolled && !transparent ? 'shadow-soft' : ''}`}
     >
