@@ -28,7 +28,7 @@ function SkeletonGrid() {
 }
 
 export default function SemanticSearchResults({ search }: SemanticSearchResultsProps) {
-  const { query, status, results, isSemantic, phrase, debugMode, setDebugMode, errorMessage, retry, submitQuery } = search;
+  const { query, status, results, isSemantic, phrase, errorMessage, retry, submitQuery } = search;
 
   const matchedCategories = Array.from(
     new Set(results.slice(0, 3).map((r) => r.category))
@@ -88,29 +88,18 @@ export default function SemanticSearchResults({ search }: SemanticSearchResultsP
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Sparkles size={14} className={isSemantic ? 'text-[#a100ff]' : 'text-gray-400'} />
-          {isSemantic ? (
-            <span>
-              AI-ranked by meaning
-              {matchedCategories.length > 0 && (
-                <span className="text-gray-400"> · matched on {matchedCategories.join(', ')}</span>
-              )}
-            </span>
-          ) : (
-            <span>Keyword search (AI ranking temporarily unavailable)</span>
-          )}
-        </div>
-        <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={debugMode}
-            onChange={(e) => setDebugMode(e.target.checked)}
-            className="accent-[#a100ff]"
-          />
-          Show AI scores
-        </label>
+      <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <Sparkles size={14} className={isSemantic ? 'text-[#a100ff]' : 'text-gray-400'} />
+        {isSemantic ? (
+          <span>
+            AI-ranked by meaning
+            {matchedCategories.length > 0 && (
+              <span className="text-gray-400"> · matched on {matchedCategories.join(', ')}</span>
+            )}
+          </span>
+        ) : (
+          <span>Keyword search (AI ranking temporarily unavailable)</span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -120,11 +109,6 @@ export default function SemanticSearchResults({ search }: SemanticSearchResultsP
             item={item}
             className="opacity-0 animate-fadeInUp"
             style={{ animationDelay: `${i * 90}ms` }}
-            matchInfo={
-              debugMode
-                ? { score: item.match_score, vectorRank: item.vector_rank, keywordRank: item.keyword_rank }
-                : undefined
-            }
           />
         ))}
       </div>

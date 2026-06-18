@@ -94,7 +94,7 @@ serve(async (req) => {
       p_category: category ?? null,
       p_min_price: minPrice ?? null,
       p_max_price: maxPrice ?? null,
-      match_count: 20,
+      match_count: 4,
     })
 
     if (error) {

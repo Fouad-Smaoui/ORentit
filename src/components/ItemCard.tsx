@@ -24,20 +24,13 @@ interface Item {
   };
 }
 
-interface MatchInfo {
-  score: number;
-  vectorRank: number | null;
-  keywordRank: number | null;
-}
-
 interface ItemCardProps {
   item: Item;
-  matchInfo?: MatchInfo;
   style?: React.CSSProperties;
   className?: string;
 }
 
-export function ItemCard({ item, matchInfo, style, className = '' }: ItemCardProps) {
+export function ItemCard({ item, style, className = '' }: ItemCardProps) {
   const [distance, setDistance] = useState<number | null>(null);
 
   useEffect(() => {
@@ -102,14 +95,6 @@ export function ItemCard({ item, matchInfo, style, className = '' }: ItemCardPro
               View Details
             </Button>
           </div>
-          {matchInfo && (
-            <div className="mt-2 pt-2 border-t border-gray-100 text-xs text-gray-400 font-mono">
-              score {matchInfo.score.toFixed(3)}
-              {matchInfo.vectorRank !== null && ` · vector #${matchInfo.vectorRank}`}
-              {matchInfo.keywordRank !== null && ` · keyword #${matchInfo.keywordRank}`}
-              {matchInfo.vectorRank === null && ' · vector: no match'}
-            </div>
-          )}
         </div>
       </Link>
     </div>

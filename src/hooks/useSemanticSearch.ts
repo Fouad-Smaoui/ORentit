@@ -22,7 +22,6 @@ export function useSemanticSearch() {
   const [results, setResults] = useState<SemanticSearchResult[]>([]);
   const [isSemantic, setIsSemantic] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const [debugMode, setDebugMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const requestIdRef = useRef(0);
 
@@ -91,8 +90,6 @@ export function useSemanticSearch() {
     results,
     isSemantic,
     phrase: THINKING_PHRASES[phraseIndex],
-    debugMode,
-    setDebugMode,
     errorMessage,
     submit,
     submitQuery,
