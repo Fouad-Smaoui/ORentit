@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import { calculateDistance, getUserLocation, formatDistance } from '../lib/location';
@@ -63,17 +64,20 @@ export function ItemCard({ item, style, className = '', compact = false }: ItemC
   };
 
   return (
-    <div
-      className={`group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 h-full flex flex-col ${className}`}
+    <motion.div
+      className={`group bg-white rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-300 h-full flex flex-col ${className}`}
       style={style}
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
     >
       <Link to={`/items/${item.id}`} className="flex flex-col flex-1">
-        <div className={`flex-shrink-0 ${compact ? 'relative h-24 sm:h-28' : 'relative h-48'}`}>
+        <div className={`flex-shrink-0 overflow-hidden ${compact ? 'relative h-24 sm:h-28' : 'relative h-48'}`}>
           <img
             src={item.image_url || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop'}
             alt={item.name}
             onError={handleImageError}
-            className="w-full h-full object-cover rounded-t-lg"
+            className="w-full h-full object-cover rounded-t-lg transition-transform duration-500 ease-out group-hover:scale-105"
           />
         </div>
         <div className={`flex flex-col flex-1 ${compact ? 'p-3' : 'p-4'}`}>
@@ -102,7 +106,7 @@ export function ItemCard({ item, style, className = '', compact = false }: ItemC
           </div>
         </div>
       </Link>
-    </div>
+    </motion.div>
   );
 }
 

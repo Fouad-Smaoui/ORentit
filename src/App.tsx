@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { MotionConfig } from 'framer-motion';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -92,6 +93,7 @@ const App = () => {
 
   return (
     <ErrorBoundary>
+      <MotionConfig reducedMotion="user">
       <AuthProvider>
         <Router>
           <div className="flex flex-col min-h-screen">
@@ -151,6 +153,7 @@ const App = () => {
           </div>
         </Router>
       </AuthProvider>
+      </MotionConfig>
     </ErrorBoundary>
   );
 };

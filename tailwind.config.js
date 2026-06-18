@@ -3,6 +3,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
         primary: {
           DEFAULT: '#a100ff',
@@ -18,14 +21,10 @@ export default {
           900: '#330052',
         },
       },
-      keyframes: {
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(8px) scale(0.98)' },
-          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
-        },
-      },
-      animation: {
-        fadeInUp: 'fadeInUp 0.4s ease-out forwards',
+      boxShadow: {
+        soft: '0 2px 8px -2px rgb(16 24 40 / 0.06), 0 4px 16px -4px rgb(16 24 40 / 0.08)',
+        elevated: '0 8px 24px -4px rgb(16 24 40 / 0.10), 0 4px 8px -4px rgb(16 24 40 / 0.06)',
+        glow: '0 0 0 1px rgb(161 0 255 / 0.08), 0 8px 32px -8px rgb(161 0 255 / 0.25)',
       },
     },
   },
