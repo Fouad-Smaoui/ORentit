@@ -90,16 +90,16 @@ export function ItemCard({ item, style, className = '', compact = false }: ItemC
             </span>
           </div>
           {!compact && <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>}
-          <div className="flex items-center justify-between mt-auto pt-2">
-            <div className="flex items-center text-gray-500 text-sm truncate">
+          <div className="flex items-center justify-between gap-2 mt-auto pt-2">
+            <div className="flex items-center min-w-0 flex-1 text-gray-500 text-sm">
               <MapPin size={14} className="mr-1 flex-shrink-0" />
               <span className="truncate">{item.location}</span>
               {distance !== null && !compact && (
-                <span className="ml-1 text-gray-400">• {formatDistance(distance)} away</span>
+                <span className="ml-1 text-gray-400 flex-shrink-0">• {formatDistance(distance)} away</span>
               )}
             </div>
             {!compact && (
-              <Button variant="secondary" size="sm">
+              <Button variant="secondary" size="sm" className="flex-shrink-0">
                 View Details
               </Button>
             )}
