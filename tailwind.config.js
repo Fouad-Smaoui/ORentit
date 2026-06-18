@@ -18,6 +18,15 @@ export default {
           900: '#330052',
         },
       },
+      keyframes: {
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(8px) scale(0.98)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+      },
+      animation: {
+        fadeInUp: 'fadeInUp 0.4s ease-out forwards',
+      },
     },
   },
   plugins: [],

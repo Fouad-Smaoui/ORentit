@@ -101,10 +101,7 @@ serve(async (req) => {
       throw new Error(error.message)
     }
 
-    // Strip large vector/search columns before returning to the client.
-    const results = (data || []).map(({ embedding: _e, search_vector: _s, embedding_input_hash: _h, ...rest }: any) => rest)
-
-    return new Response(JSON.stringify({ results, semantic: embedding !== null }), {
+    return new Response(JSON.stringify({ results: data || [], semantic: embedding !== null }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {

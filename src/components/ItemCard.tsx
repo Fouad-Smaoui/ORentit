@@ -24,11 +24,20 @@ interface Item {
   };
 }
 
-interface ItemCardProps {
-  item: Item;
+interface MatchInfo {
+  score: number;
+  vectorRank: number | null;
+  keywordRank: number | null;
 }
 
-export function ItemCard({ item }: ItemCardProps) {
+interface ItemCardProps {
+  item: Item;
+  matchInfo?: MatchInfo;
+  style?: React.CSSProperties;
+  className?: string;
+}
+
+export function ItemCard({ item, matchInfo, style, className = '' }: ItemCardProps) {
   const [distance, setDistance] = useState<number | null>(null);
 
   useEffect(() => {
@@ -60,7 +69,10 @@ export function ItemCard({ item }: ItemCardProps) {
   };
 
   return (
-    <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div
+      className={`group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
+      style={style}
+    >
       <Link to={`/items/${item.id}`} className="block">
         <div className="relative aspect-w-16 aspect-h-9">
           <img
@@ -90,6 +102,14 @@ export function ItemCard({ item }: ItemCardProps) {
               View Details
             </Button>
           </div>
+          {matchInfo && (
+            <div className="mt-2 pt-2 border-t border-gray-100 text-xs text-gray-400 font-mono">
+              score {matchInfo.score.toFixed(3)}
+              {matchInfo.vectorRank !== null && ` · vector #${matchInfo.vectorRank}`}
+              {matchInfo.keywordRank !== null && ` · keyword #${matchInfo.keywordRank}`}
+              {matchInfo.vectorRank === null && ' · vector: no match'}
+            </div>
+          )}
         </div>
       </Link>
     </div>

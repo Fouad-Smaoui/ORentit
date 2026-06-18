@@ -257,10 +257,16 @@ export const embedItem = (itemId: string): void => {
   });
 };
 
+export interface SemanticSearchResult extends Item {
+  match_score: number;
+  vector_rank: number | null;
+  keyword_rank: number | null;
+}
+
 export const semanticSearchItems = async (
   query: string,
   filters?: { category?: string; minPrice?: number; maxPrice?: number }
-): Promise<{ results: Item[]; semantic: boolean }> => {
+): Promise<{ results: SemanticSearchResult[]; semantic: boolean }> => {
   const response = await fetch(`${supabaseUrl}/functions/v1/semantic-search`, {
     method: 'POST',
     headers: {
