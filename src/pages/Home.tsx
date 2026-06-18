@@ -112,13 +112,13 @@ const Home = () => {
           Search bar (shrink-0) + status + results (flex-1, internal scroll only)
           so a query never requires page scroll to see its results. */}
       <div
-        className="relative h-[calc(100vh-4rem)] flex flex-col overflow-hidden bg-cover bg-center"
+        className="relative h-screen -mt-16 flex flex-col overflow-hidden bg-cover bg-center"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2021&q=80")',
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50" />
-        <div className="relative z-10 flex flex-col h-full px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 flex flex-col h-full pt-16 px-4 sm:px-6 lg:px-8">
           {/* Header + search bar — fixed at the top of the panel */}
           <motion.div
             className="flex-shrink-0 max-w-3xl mx-auto w-full text-center pt-4 sm:pt-12 pb-3"
