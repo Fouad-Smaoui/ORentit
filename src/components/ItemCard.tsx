@@ -64,11 +64,11 @@ export function ItemCard({ item, style, className = '', compact = false }: ItemC
 
   return (
     <div
-      className={`group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
+      className={`group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 h-full flex flex-col ${className}`}
       style={style}
     >
-      <Link to={`/items/${item.id}`} className="block">
-        <div className={compact ? 'relative h-24 sm:h-28' : 'relative h-48'}>
+      <Link to={`/items/${item.id}`} className="flex flex-col flex-1">
+        <div className={`flex-shrink-0 ${compact ? 'relative h-24 sm:h-28' : 'relative h-48'}`}>
           <img
             src={item.image_url || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop'}
             alt={item.name}
@@ -76,7 +76,7 @@ export function ItemCard({ item, style, className = '', compact = false }: ItemC
             className="w-full h-full object-cover rounded-t-lg"
           />
         </div>
-        <div className={compact ? 'p-3' : 'p-4'}>
+        <div className={`flex flex-col flex-1 ${compact ? 'p-3' : 'p-4'}`}>
           <div className="flex items-center justify-between mb-1">
             <h3 className={`font-semibold text-gray-900 group-hover:text-primary transition-colors truncate ${compact ? 'text-sm' : 'text-lg'}`}>
               {item.name}
@@ -86,7 +86,7 @@ export function ItemCard({ item, style, className = '', compact = false }: ItemC
             </span>
           </div>
           {!compact && <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto pt-2">
             <div className="flex items-center text-gray-500 text-sm truncate">
               <MapPin size={14} className="mr-1 flex-shrink-0" />
               <span className="truncate">{item.location}</span>
