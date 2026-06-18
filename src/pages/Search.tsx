@@ -39,9 +39,9 @@ const Search: React.FC = () => {
           <Sparkles size={14} />
           SEMANTIC AI SEARCH
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Find Your Next Adventure</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Find Your Next Rental</h1>
         <p className="text-gray-500 mb-6">
-          Describe what you want to do — our AI understands intent, not just keywords.
+          Describe what you want to do — our AI finds the right gear to rent, not just keyword matches.
         </p>
 
         <form onSubmit={handleSubmit}>

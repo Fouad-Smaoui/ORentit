@@ -131,14 +131,14 @@ const Home = () => {
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 sm:mb-3"
             >
-              Your next adventure starts <span className="text-primary-400">with a sentence</span>
+              Describe your next adventure. <span className="text-primary-400">We'll find the gear to rent.</span>
             </motion.h1>
             <motion.p
               variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="hidden sm:block text-white/90 text-base md:text-lg mb-6"
             >
-              Skip the filters. Describe what you want to do, and our AI matches you with the gear to do it.
+              Skip the filters. Describe what you want to do, and our AI matches you with gear to rent — instantly.
             </motion.p>
 
             <motion.form
@@ -183,11 +183,11 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Explore by Adventure */}
+      {/* Rent by Adventure */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <p className="text-xs font-semibold tracking-widest text-primary-500 uppercase mb-2">Discover</p>
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Explore by Adventure</h2>
-        <p className="text-gray-500 mb-8">Tap a theme to see AI-matched gear, or just start typing above.</p>
+        <p className="text-xs font-semibold tracking-widest text-primary-500 uppercase mb-2">Rent by Theme</p>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Gear Up for Your Next Adventure</h2>
+        <p className="text-gray-500 mb-8">Tap a theme to see gear you can rent, matched by AI — or just start typing above.</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {ADVENTURE_THEMES.map((theme) => (
