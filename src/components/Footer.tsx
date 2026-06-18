@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Youtube, Mail, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -9,7 +9,7 @@ const Footer = () => {
     <footer className="bg-white border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand Column */}
           <div className="col-span-1">
             <Link 
@@ -61,18 +61,6 @@ const Footer = () => {
                 >
                   <span className="relative">
                     List Your Item
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#a100ff] group-hover:w-full transition-all duration-300"></span>
-                  </span>
-                  <ArrowUpRight className="h-4 w-4 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-1 transition-all duration-300" />
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/contact" 
-                  className="group text-gray-600 hover:text-[#a100ff] transition-colors inline-flex items-center"
-                >
-                  <span className="relative">
-                    Contact Us
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#a100ff] group-hover:w-full transition-all duration-300"></span>
                   </span>
                   <ArrowUpRight className="h-4 w-4 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-1 transition-all duration-300" />
@@ -134,56 +122,6 @@ const Footer = () => {
                 </Link>
               </li>
             </ul>
-          </div>
-
-          {/* Contact & Social */}
-          <div className="col-span-1">
-            <h3 className="text-gray-900 font-semibold mb-6 text-lg">Connect With Us</h3>
-            <div className="flex space-x-5 mb-8">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-gray-50 p-3 rounded-full hover:bg-[#a100ff]/5 transition-colors duration-300"
-              >
-                <Facebook className="h-5 w-5 text-gray-600 group-hover:text-[#a100ff] transition-colors" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-gray-50 p-3 rounded-full hover:bg-[#a100ff]/5 transition-colors duration-300"
-              >
-                <Instagram className="h-5 w-5 text-gray-600 group-hover:text-[#a100ff] transition-colors" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-gray-50 p-3 rounded-full hover:bg-[#a100ff]/5 transition-colors duration-300"
-              >
-                <Twitter className="h-5 w-5 text-gray-600 group-hover:text-[#a100ff] transition-colors" />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-gray-50 p-3 rounded-full hover:bg-[#a100ff]/5 transition-colors duration-300"
-              >
-                <Youtube className="h-5 w-5 text-gray-600 group-hover:text-[#a100ff] transition-colors" />
-              </a>
-            </div>
-            <div className="group bg-gray-50 rounded-2xl p-4 hover:bg-[#a100ff]/5 transition-all duration-300">
-              <div className="flex items-center space-x-3 text-gray-600">
-                <Mail className="h-5 w-5 group-hover:text-[#a100ff] transition-colors" />
-                <a 
-                  href="mailto:contact@orentit.com" 
-                  className="group-hover:text-[#a100ff] transition-colors text-sm"
-                >
-                  contact@orentit.com
-                </a>
-              </div>
-            </div>
           </div>
         </div>
 
