@@ -82,11 +82,11 @@ const Home = () => {
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative z-10 flex flex-col h-full px-4 sm:px-6 lg:px-8">
           {/* Header + search bar — fixed at the top of the panel */}
-          <div className="flex-shrink-0 max-w-3xl mx-auto w-full text-center pt-8 sm:pt-12 pb-4">
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-3">
+          <div className="flex-shrink-0 max-w-3xl mx-auto w-full text-center pt-4 sm:pt-12 pb-3">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2 sm:mb-3">
               Rent Anything, <span className="text-primary-400">Anywhere</span>
             </h1>
-            <p className="text-white text-base md:text-lg mb-6">
+            <p className="hidden sm:block text-white text-base md:text-lg mb-6">
               Join our community of renters and owners. Share your items or find exactly what you need.
             </p>
 
@@ -98,7 +98,7 @@ const Home = () => {
                   placeholder="Describe what you're after, e.g. a relaxing beach vacation"
                   value={search.query}
                   onChange={(e) => search.setQuery(e.target.value)}
-                  className="w-full pl-16 pr-32 py-4 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-[#a100ff] focus:ring-opacity-50 shadow-lg bg-white/95 backdrop-blur-sm"
+                  className="w-full pl-16 pr-32 py-2.5 sm:py-4 rounded-full text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-[#a100ff] focus:ring-opacity-50 shadow-lg bg-white/95 backdrop-blur-sm"
                 />
                 <Button
                   type="submit"

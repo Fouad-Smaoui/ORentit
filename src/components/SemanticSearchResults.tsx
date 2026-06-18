@@ -15,12 +15,12 @@ interface SemanticSearchResultsProps {
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="animate-pulse">
-          <div className="bg-gray-200 h-48 rounded-lg mb-4" />
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-          <div className="h-4 bg-gray-200 rounded w-1/2" />
+    <div className="flex gap-4 overflow-x-auto pb-2">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="flex-shrink-0 w-56 sm:w-64 animate-pulse">
+          <div className="bg-gray-200 h-32 sm:h-36 rounded-lg mb-3" />
+          <div className="h-3 bg-gray-200 rounded w-3/4 mb-2" />
+          <div className="h-3 bg-gray-200 rounded w-1/2" />
         </div>
       ))}
     </div>
@@ -102,14 +102,16 @@ export default function SemanticSearchResults({ search }: SemanticSearchResultsP
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="flex gap-4 overflow-x-auto pb-2">
         {results.map((item, i) => (
-          <ItemCard
-            key={item.id}
-            item={item}
-            className="opacity-0 animate-fadeInUp"
-            style={{ animationDelay: `${i * 90}ms` }}
-          />
+          <div key={item.id} className="flex-shrink-0 w-56 sm:w-64">
+            <ItemCard
+              item={item}
+              compact
+              className="opacity-0 animate-fadeInUp h-full"
+              style={{ animationDelay: `${i * 90}ms` }}
+            />
+          </div>
         ))}
       </div>
     </div>

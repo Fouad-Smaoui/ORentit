@@ -28,9 +28,10 @@ interface ItemCardProps {
   item: Item;
   style?: React.CSSProperties;
   className?: string;
+  compact?: boolean;
 }
 
-export function ItemCard({ item, style, className = '' }: ItemCardProps) {
+export function ItemCard({ item, style, className = '', compact = false }: ItemCardProps) {
   const [distance, setDistance] = useState<number | null>(null);
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export function ItemCard({ item, style, className = '' }: ItemCardProps) {
       style={style}
     >
       <Link to={`/items/${item.id}`} className="block">
-        <div className="relative aspect-w-16 aspect-h-9">
+        <div className={compact ? 'relative h-24 sm:h-28' : 'relative aspect-w-16 aspect-h-9'}>
           <img
             src={item.image_url || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop'}
             alt={item.name}
@@ -75,25 +76,29 @@ export function ItemCard({ item, style, className = '' }: ItemCardProps) {
             className="w-full h-full object-cover rounded-t-lg"
           />
         </div>
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors">
+        <div className={compact ? 'p-3' : 'p-4'}>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className={`font-semibold text-gray-900 group-hover:text-primary transition-colors truncate ${compact ? 'text-sm' : 'text-lg'}`}>
               {item.name}
             </h3>
-            <span className="text-lg font-bold text-primary">${item.price_per_day}/day</span>
+            <span className={`font-bold text-primary flex-shrink-0 ml-2 ${compact ? 'text-sm' : 'text-lg'}`}>
+              ${item.price_per_day}/day
+            </span>
           </div>
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
+          {!compact && <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>}
           <div className="flex items-center justify-between">
-            <div className="flex items-center text-gray-500 text-sm">
-              <MapPin size={16} className="mr-1" />
-              <span>{item.location}</span>
-              {distance !== null && (
+            <div className="flex items-center text-gray-500 text-sm truncate">
+              <MapPin size={14} className="mr-1 flex-shrink-0" />
+              <span className="truncate">{item.location}</span>
+              {distance !== null && !compact && (
                 <span className="ml-1 text-gray-400">• {formatDistance(distance)} away</span>
               )}
             </div>
-            <Button variant="secondary" size="sm">
-              View Details
-            </Button>
+            {!compact && (
+              <Button variant="secondary" size="sm">
+                View Details
+              </Button>
+            )}
           </div>
         </div>
       </Link>
