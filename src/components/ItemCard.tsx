@@ -68,7 +68,7 @@ export function ItemCard({ item, style, className = '', compact = false }: ItemC
       style={style}
     >
       <Link to={`/items/${item.id}`} className="block">
-        <div className={compact ? 'relative h-24 sm:h-28' : 'relative aspect-w-16 aspect-h-9'}>
+        <div className={compact ? 'relative h-24 sm:h-28' : 'relative h-48'}>
           <img
             src={item.image_url || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop'}
             alt={item.name}

@@ -26,7 +26,7 @@ const testItems = [
     description: 'Eco-friendly electric scooter with 30km range',
     price_per_day: 20.00,
     location: 'Lille, France',
-    image_url: 'https://images.unsplash.com/photo-1604868189538-68474ba5c224?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    image_url: 'https://images.unsplash.com/photo-1566936737687-8f392a237b8b?auto=format&fit=crop&w=1470&q=80',
     status: 'available'
   },
   {
@@ -35,7 +35,7 @@ const testItems = [
     description: 'Complete DJ setup with mixer and speakers',
     price_per_day: 60.00,
     location: 'Strasbourg, France',
-    image_url: 'https://images.unsplash.com/photo-1571935441005-07c3d3d56dcd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    image_url: 'https://images.unsplash.com/photo-1571397133301-3f838ea96f56?auto=format&fit=crop&w=1470&q=80',
     status: 'available'
   },
   {
@@ -44,7 +44,7 @@ const testItems = [
     description: 'Complete set of power tools for home improvement',
     price_per_day: 30.00,
     location: 'Bordeaux, France',
-    image_url: 'https://images.unsplash.com/photo-1581147036324-c1c9309b015f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
+    image_url: 'https://images.unsplash.com/photo-1540103711724-ebf833bde8d1?auto=format&fit=crop&w=1470&q=80',
     status: 'available'
   },
   {
@@ -71,7 +71,7 @@ const testItems = [
     description: 'Two-person kayak with paddles and life jackets',
     price_per_day: 40.00,
     location: 'Brest, France',
-    image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    image_url: 'https://images.unsplash.com/photo-1620903669944-de50fbe78210?auto=format&fit=crop&w=1470&q=80',
     status: 'available'
   },
   {
