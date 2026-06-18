@@ -12,6 +12,8 @@ const EXAMPLE_QUERIES = [
 
 interface SemanticSearchResultsProps {
   search: ReturnType<typeof useSemanticSearch>;
+  /** 'dark' for use over a photo hero, 'light' for use on a plain page background. */
+  variant?: 'dark' | 'light';
 }
 
 const containerVariants = {
@@ -45,7 +47,7 @@ function SkeletonGrid() {
   );
 }
 
-export default function SemanticSearchResults({ search }: SemanticSearchResultsProps) {
+export default function SemanticSearchResults({ search, variant = 'dark' }: SemanticSearchResultsProps) {
   const { query, status, results, isSemantic, phrase, errorMessage, retry, submitQuery } = search;
 
   const matchedCategories = Array.from(
@@ -56,6 +58,9 @@ export default function SemanticSearchResults({ search }: SemanticSearchResultsP
     <AnimatePresence mode="wait">
       {status === 'idle' && (
         <motion.div key="idle" {...fadeSwap}>
+          <p className={`text-center text-sm mb-3 ${variant === 'dark' ? 'text-white/70' : 'text-gray-400'}`}>
+            Or get inspired:
+          </p>
           <motion.div
             className="flex flex-wrap gap-2 justify-center"
             variants={containerVariants}
@@ -119,8 +124,21 @@ export default function SemanticSearchResults({ search }: SemanticSearchResultsP
 
       {status === 'results' && results.length === 0 && (
         <motion.div key="empty" {...fadeSwap} className="text-center py-12">
-          <p className="text-gray-600 text-lg font-medium">No matches for "{query}"</p>
-          <p className="text-gray-400 mt-2">Try describing what you want to do, not just what you want to rent.</p>
+          <p className="text-gray-600 text-lg font-medium">Nothing matched "{query}" yet</p>
+          <p className="text-gray-400 mt-2 mb-6">
+            Try describing the activity or feeling you're after — like "cozy mountain weekend" or "underwater photography".
+          </p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {EXAMPLE_QUERIES.slice(0, 3).map((example) => (
+              <button
+                key={example}
+                onClick={() => submitQuery(example)}
+                className="px-4 py-1.5 rounded-full border border-gray-200 text-sm text-gray-600 bg-white shadow-soft hover:border-[#a100ff] hover:text-[#a100ff] transition-colors"
+              >
+                {example}
+              </button>
+            ))}
+          </div>
         </motion.div>
       )}
 

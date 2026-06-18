@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Car, Tent, ArrowRight } from 'lucide-react';
+import { Search, Sparkles, ArrowRight, Compass } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createClient } from '@supabase/supabase-js';
 import ItemCard from '../components/ItemCard';
@@ -31,6 +31,40 @@ interface Item {
     avatar_url: string | null;
   };
 }
+
+interface AdventureTheme {
+  title: string;
+  description: string;
+  query: string;
+  image: string;
+}
+
+const ADVENTURE_THEMES: AdventureTheme[] = [
+  {
+    title: 'Winter Escapes',
+    description: 'Powder days and mountain air',
+    query: 'skiing and snowboarding in the mountains this winter',
+    image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=70',
+  },
+  {
+    title: 'Nature & Wildlife',
+    description: 'Get closer to the wild',
+    query: 'photographing wildlife and landscapes',
+    image: 'https://images.unsplash.com/photo-1758163462515-84679111e6c0?auto=format&fit=crop&w=800&q=70',
+  },
+  {
+    title: 'Coastal Getaways',
+    description: 'Sun, salt air, and slow days',
+    query: 'relaxing beach vacation with warm weather',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=70',
+  },
+  {
+    title: 'City Wandering',
+    description: 'Cobblestones and hidden corners',
+    query: 'exploring historic cities and museums',
+    image: 'https://images.unsplash.com/photo-1714477897451-814a2f5aba8a?auto=format&fit=crop&w=800&q=70',
+  },
+];
 
 const Home = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -67,6 +101,11 @@ const Home = () => {
     search.submit();
   };
 
+  const handleThemeClick = (query: string) => {
+    search.submitQuery(query);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div>
       {/* Self-contained search panel — fits in the viewport below the navbar.
@@ -92,14 +131,14 @@ const Home = () => {
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 sm:mb-3"
             >
-              Rent Anything, <span className="text-primary-400">Anywhere</span>
+              Your next adventure starts <span className="text-primary-400">with a sentence</span>
             </motion.h1>
             <motion.p
               variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="hidden sm:block text-white/90 text-base md:text-lg mb-6"
             >
-              Join our community of renters and owners. Share your items or find exactly what you need.
+              Skip the filters. Describe what you want to do, and our AI matches you with the gear to do it.
             </motion.p>
 
             <motion.form
@@ -112,7 +151,7 @@ const Home = () => {
                 <Search className="absolute left-6 text-gray-400" size={20} />
                 <input
                   type="text"
-                  placeholder="Describe what you're after, e.g. a relaxing beach vacation"
+                  placeholder="Try: &ldquo;ski powder in the Alps&rdquo; or &ldquo;shoot wildlife at golden hour&rdquo;"
                   value={search.query}
                   onChange={(e) => search.setQuery(e.target.value)}
                   className="w-full pl-16 pr-32 py-2.5 sm:py-4 rounded-full text-base sm:text-lg focus:outline-none bg-white/95 backdrop-blur-sm"
@@ -125,6 +164,16 @@ const Home = () => {
                 </Button>
               </div>
             </motion.form>
+            {search.status === 'idle' && (
+              <motion.p
+                variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="flex items-center justify-center gap-1.5 text-white/70 text-xs mt-3"
+              >
+                <Sparkles size={12} />
+                Powered by semantic AI — describe a mood, activity, or place. No keywords needed.
+              </motion.p>
+            )}
           </motion.div>
 
           {/* Status + results — fills remaining height, scrolls internally if it overflows */}
@@ -134,48 +183,50 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Categories Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">Popular Categories</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          <Link to="/items?category=vehicles" className="group bg-white rounded-lg shadow-soft overflow-hidden hover:shadow-elevated hover:-translate-y-1 transition-all duration-300">
-            <div className="relative h-48 overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                alt="Vehicles"
-                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                <div className="text-white text-center">
-                  <Car size={48} className="mx-auto mb-2" />
-                  <h3 className="text-2xl font-bold">Vehicles</h3>
-                </div>
-              </div>
-            </div>
-          </Link>
+      {/* Explore by Adventure */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <p className="text-xs font-semibold tracking-widest text-primary-500 uppercase mb-2">Discover</p>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Explore by Adventure</h2>
+        <p className="text-gray-500 mb-8">Tap a theme to see AI-matched gear, or just start typing above.</p>
 
-          <Link to="/items?category=leisure" className="group bg-white rounded-lg shadow-soft overflow-hidden hover:shadow-elevated hover:-translate-y-1 transition-all duration-300">
-            <div className="relative h-48 overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          {ADVENTURE_THEMES.map((theme) => (
+            <button
+              key={theme.title}
+              onClick={() => handleThemeClick(theme.query)}
+              className="group relative h-56 rounded-2xl overflow-hidden shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 text-left"
+            >
               <img
-                src="https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                alt="Leisure"
-                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                src={theme.image}
+                alt={theme.title}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                <div className="text-white text-center">
-                  <Tent size={48} className="mx-auto mb-2" />
-                  <h3 className="text-2xl font-bold">Leisure</h3>
-                </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-4 text-white">
+                <h3 className="text-lg font-bold leading-tight">{theme.title}</h3>
+                <p className="text-sm text-white/80">{theme.description}</p>
               </div>
-            </div>
+            </button>
+          ))}
+
+          <Link
+            to="/items"
+            className="group relative h-56 rounded-2xl overflow-hidden bg-gradient-to-br from-primary-500 to-primary-700 shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-white text-center p-4"
+          >
+            <Compass size={32} className="mb-3 transition-transform duration-300 group-hover:rotate-45" />
+            <h3 className="text-lg font-bold leading-tight">Browse All Gear</h3>
+            <p className="text-sm text-white/80">See the full collection</p>
           </Link>
         </div>
       </div>
 
-      {/* Featured Items Section */}
+      {/* Just Listed */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Featured Items</h2>
+          <div>
+            <p className="text-xs font-semibold tracking-widest text-primary-500 uppercase mb-2">Fresh Arrivals</p>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900">Just Listed</h2>
+          </div>
           <Link
             to="/items"
             className="group text-[#a100ff] hover:text-opacity-90 font-medium flex items-center gap-1.5"

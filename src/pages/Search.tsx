@@ -39,9 +39,9 @@ const Search: React.FC = () => {
           <Sparkles size={14} />
           SEMANTIC AI SEARCH
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Search Items</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Find Your Next Adventure</h1>
         <p className="text-gray-500 mb-6">
-          Describe what you're after — "I want to go skiing this winter" works as well as a product name.
+          Describe what you want to do — our AI understands intent, not just keywords.
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -69,7 +69,7 @@ const Search: React.FC = () => {
 
       {/* Status + results — fills remaining height, scrolls internally if it overflows */}
       <div className="flex-1 min-h-0 overflow-y-auto container mx-auto px-4 pb-6">
-        <SemanticSearchResults search={search} />
+        <SemanticSearchResults search={search} variant="light" />
       </div>
     </div>
   );
