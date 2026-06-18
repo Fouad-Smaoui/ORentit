@@ -73,6 +73,42 @@ const testItems = [
     location: 'Brest, France',
     image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
     status: 'available'
+  },
+  {
+    name: 'Ski & Snowboard Gear Set',
+    category: 'leisure',
+    description: 'Complete alpine skis, poles, and boots, plus a snowboard option. Everything you need for a winter mountain getaway.',
+    price_per_day: 50.00,
+    location: 'Chamonix, France',
+    image_url: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    status: 'available'
+  },
+  {
+    name: 'Wildlife Telephoto Lens Kit',
+    category: 'leisure',
+    description: '600mm telephoto lens with monopod, built for capturing wildlife and sweeping landscape shots from a distance.',
+    price_per_day: 55.00,
+    location: 'Annecy, France',
+    image_url: 'https://images.unsplash.com/photo-1495707902641-75cac588d2e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    status: 'available'
+  },
+  {
+    name: 'Beach Vacation Bundle',
+    category: 'leisure',
+    description: 'Beach umbrella, two loungers, a cooler, and a snorkel set — everything for a relaxing day of warm sun and calm water.',
+    price_per_day: 25.00,
+    location: 'Nice, France',
+    image_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    status: 'available'
+  },
+  {
+    name: 'Vintage City Bike',
+    category: 'vehicles',
+    description: 'Classic step-through city bike, perfect for exploring historic city centers, museums, and cobblestone streets at a relaxed pace.',
+    price_per_day: 18.00,
+    location: 'Paris, France',
+    image_url: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    status: 'available'
   }
 ];
 

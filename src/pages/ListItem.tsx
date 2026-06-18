@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Calendar } from 'lucide-react';
-import { uploadImage, createItem, supabase, ensurePublicBucket, CreateItemData } from '../lib/supabase';
+import { uploadImage, createItem, embedItem, supabase, ensurePublicBucket, CreateItemData } from '../lib/supabase';
 import LocationSelect from '../components/LocationSelect';
 
 interface Location {
@@ -116,7 +116,8 @@ const ListItem: React.FC = () => {
         end_date: formData.endDate,
       };
 
-      await createItem(itemData);
+      const createdItem = await createItem(itemData);
+      embedItem(createdItem.id);
 
       navigate('/dashboard');
     } catch (error) {

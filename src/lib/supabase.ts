@@ -244,6 +244,45 @@ export const getItems = async (filters?: {
   return data;
 };
 
+export const embedItem = (itemId: string): void => {
+  fetch(`${supabaseUrl}/functions/v1/embed-item`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${supabaseAnonKey}`,
+    },
+    body: JSON.stringify({ itemId }),
+  }).catch((error) => {
+    console.error('Failed to queue item embedding:', error);
+  });
+};
+
+export const semanticSearchItems = async (
+  query: string,
+  filters?: { category?: string; minPrice?: number; maxPrice?: number }
+): Promise<{ results: Item[]; semantic: boolean }> => {
+  const response = await fetch(`${supabaseUrl}/functions/v1/semantic-search`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${supabaseAnonKey}`,
+    },
+    body: JSON.stringify({
+      query,
+      category: filters?.category,
+      minPrice: filters?.minPrice,
+      maxPrice: filters?.maxPrice,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Search failed');
+  }
+
+  return response.json();
+};
+
 export const getItemById = async (id: string) => {
   const { data, error } = await supabase
     .from('items')

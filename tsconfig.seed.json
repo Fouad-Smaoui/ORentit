@@ -13,5 +13,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["supabase/seed.ts", "supabase/verify.ts"]
+  "include": ["supabase/seed.ts", "supabase/seed_users.ts", "supabase/backfill_embeddings.ts"]
 } 
