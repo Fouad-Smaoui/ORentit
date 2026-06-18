@@ -47,7 +47,7 @@ export default function ItemDetail() {
   useEffect(() => {
     async function fetchItem() {
       try {
-        if (!id) throw new Error('No item ID provided');
+        if (!id) throw new Error("We couldn't find that listing.");
 
         const { data, error } = await supabase
           .from('items')
@@ -66,11 +66,11 @@ export default function ItemDetail() {
           .single();
 
         if (error) throw error;
-        if (!data) throw new Error('Item not found');
+        if (!data) throw new Error("We couldn't find that listing.");
 
         setItem(data as Item);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "We couldn't load this listing — please try again.");
       } finally {
         setLoading(false);
       }

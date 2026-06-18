@@ -61,7 +61,7 @@ export default function LocationSelect({ onLocationSelect, defaultValue = '', cl
 
           if (error) {
             console.error('Error fetching locations:', error);
-            setError('Failed to fetch locations');
+            setError("Couldn't load locations — please try again.");
             return;
           }
 
@@ -69,7 +69,7 @@ export default function LocationSelect({ onLocationSelect, defaultValue = '', cl
           setIsOpen(true);
         } catch (err) {
           console.error('Error in fetchLocations:', err);
-          setError('An error occurred while fetching locations');
+          setError("Couldn't load locations — please try again.");
         }
       } else {
         setSuggestions([]);

@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutFailed, setSignOutFailed] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -31,14 +32,16 @@ const Navbar = () => {
 
     try {
       setIsSigningOut(true);
+      setSignOutFailed(false);
       await signOut();
       setTimeout(() => {
         window.location.reload();
       }, 100);
     } catch (error) {
       console.error('Error signing out:', error);
-      alert('Failed to sign out. Please try again.');
+      setSignOutFailed(true);
       setIsSigningOut(false);
+      setTimeout(() => setSignOutFailed(false), 4000);
     }
   };
 
@@ -101,11 +104,16 @@ const Navbar = () => {
                 <Link to="/profile" className={iconButtonClass}>
                   <User className={iconClass} />
                 </Link>
-                <button onClick={handleSignOut} disabled={isSigningOut} className={iconButtonClass}>
+                <button onClick={handleSignOut} disabled={isSigningOut} className={`relative ${iconButtonClass}`}>
                   {isSigningOut ? (
                     <div className={`animate-spin rounded-full h-4 w-4 border-b-2 ${isDark ? 'border-white' : 'border-gray-600'}`}></div>
                   ) : (
                     <LogOut className={iconClass} />
+                  )}
+                  {signOutFailed && (
+                    <span className="absolute top-full right-0 mt-1 px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap">
+                      Couldn't sign you out — try again
+                    </span>
                   )}
                 </button>
               </>

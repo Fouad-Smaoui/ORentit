@@ -44,7 +44,7 @@ export function ItemsPage() {
         });
         if (data) setItems(data);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'An error occurred');
+        setError(error instanceof Error ? error.message : "We couldn't load these items — please try again.");
       } finally {
         setLoading(false);
       }

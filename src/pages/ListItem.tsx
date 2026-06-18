@@ -58,12 +58,12 @@ const ListItem: React.FC = () => {
     if (file) {
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setError('Image size must be less than 5MB');
+        setError("That image is a bit large — try one under 5MB.");
         return;
       }
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        setError('Please upload an image file');
+        setError("That file doesn't look like an image — try a JPG or PNG.");
         return;
       }
       setError('');
@@ -80,19 +80,19 @@ const ListItem: React.FC = () => {
       // Check authentication on submit
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setError('You must be logged in to list items');
+        setError('Sign in first to list your item.');
         setLoading(false);
         return;
       }
 
       if (!formData.name || !formData.price_per_day || !formData.category || !formData.startDate || !formData.endDate || !formData.location) {
-        setError('Please fill in all required fields');
+        setError('A few details are missing — fill in all fields to continue.');
         setLoading(false);
         return;
       }
 
       if (!imageFile) {
-        setError('Please select an image');
+        setError("Add a photo so renters can see what they're getting.");
         setLoading(false);
         return;
       }
@@ -125,7 +125,7 @@ const ListItem: React.FC = () => {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('An unexpected error occurred');
+        setError('Something went wrong on our end — please try again.');
       }
     } finally {
       setLoading(false);

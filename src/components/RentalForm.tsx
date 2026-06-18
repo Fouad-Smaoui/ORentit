@@ -66,13 +66,13 @@ export function RentalForm({
 
     // Validate if selected dates are within available range
     if (startDate < availableStart || endDate > availableEnd) {
-      setError('Selected dates must be within the available range');
+      setError("Pick dates within this item's available window.");
       return;
     }
 
     // Validate that end date is not before start date
     if (endDate < startDate) {
-      setError('End date cannot be before start date');
+      setError('Your return date needs to be after your start date.');
       return;
     }
 
@@ -83,7 +83,7 @@ export function RentalForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!dateRange.startDate || !dateRange.endDate) {
-      setError('Please select both start and end dates');
+      setError('Choose both a start and end date to continue.');
       return;
     }
 
@@ -107,11 +107,11 @@ export function RentalForm({
 
       if (bookingsError) {
         console.error('Booking check error:', bookingsError);
-        throw new Error('Failed to check date availability');
+        throw new Error("Couldn't check availability — please try again.");
       }
 
       if (existingBookings && existingBookings.length > 0) {
-        throw new Error('These dates are not available. Please select different dates.');
+        throw new Error('Those dates are already booked — try a different range.');
       }
 
       // Store rental data in localStorage for checkout
@@ -130,7 +130,7 @@ export function RentalForm({
       navigate('/checkout');
     } catch (err) {
       console.error('Rental submission error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Something went wrong — please try again.');
     } finally {
       setLoading(false);
     }

@@ -56,7 +56,7 @@ export default function Auth() {
       }
     } catch (err) {
       console.error('Auth error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred during authentication');
+      setError(err instanceof Error ? err.message : "We couldn't sign you in — please try again.");
     } finally {
       setLoading(false);
     }

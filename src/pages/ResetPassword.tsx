@@ -16,7 +16,7 @@ const ResetPassword = () => {
     // Check if we have a valid hash in the URL
     const hash = location.hash;
     if (!hash) {
-      setError('Invalid password reset link. Please request a new one.');
+      setError("This reset link isn't valid anymore — request a new one.");
     }
   }, [location]);
 
@@ -25,12 +25,12 @@ const ResetPassword = () => {
     if (loading) return;
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Those passwords don't match.");
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError('Use at least 6 characters for your password.');
       return;
     }
 
@@ -45,7 +45,7 @@ const ResetPassword = () => {
 
       if (error) throw error;
 
-      setSuccess('Password has been reset successfully. You can now sign in with your new password.');
+      setSuccess("Your password's been reset — you're all set to sign in.");
       setTimeout(() => {
         navigate('/auth');
       }, 2000);
@@ -54,7 +54,7 @@ const ResetPassword = () => {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unexpected error occurred. Please try again.');
+        setError('Something went wrong on our end — please try again.');
       }
     } finally {
       setLoading(false);

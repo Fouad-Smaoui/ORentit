@@ -7,6 +7,7 @@ const Profile = () => {
   const { user, profile, updateProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [messageIsError, setMessageIsError] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     full_name: '',
@@ -38,10 +39,12 @@ const Profile = () => {
 
     try {
       await updateProfile(formData);
-      setMessage('Profile updated successfully!');
+      setMessage('Your profile is up to date.');
+      setMessageIsError(false);
     } catch (error) {
       console.error('Error updating profile:', error);
-      setMessage('Failed to update profile. Please try again.');
+      setMessage("Couldn't save your changes — please try again.");
+      setMessageIsError(true);
     } finally {
       setLoading(false);
     }
@@ -71,10 +74,12 @@ const Profile = () => {
 
       // Update profile with new avatar URL
       await updateProfile({ ...formData, avatar_url: publicUrl });
-      setMessage('Profile picture updated successfully!');
+      setMessage('Your new photo is live.');
+      setMessageIsError(false);
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      setMessage('Failed to upload profile picture. Please try again.');
+      setMessage("Couldn't upload that photo — please try again.");
+      setMessageIsError(true);
     } finally {
       setLoading(false);
     }
@@ -101,7 +106,7 @@ const Profile = () => {
 
           {message && (
             <div className={`p-4 mb-6 rounded-md ${
-              message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+              messageIsError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'
             }`}>
               {message}
             </div>

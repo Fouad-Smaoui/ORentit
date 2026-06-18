@@ -86,7 +86,7 @@ function PaymentForm({ clientSecret, bookingId, amount, onSuccess, bookingDetail
 
         if (dbError) {
           console.error('Error updating payment record:', dbError);
-          setError('Payment successful but failed to update records');
+          setError("Your payment went through, but we couldn't update your booking — contact support so we can sort this out.");
           return;
         }
 
@@ -98,7 +98,7 @@ function PaymentForm({ clientSecret, bookingId, amount, onSuccess, bookingDetail
 
         if (bookingError) {
           console.error('Error updating booking status:', bookingError);
-          setError('Payment successful but failed to update booking');
+          setError("Your payment went through, but we couldn't confirm your booking — contact support so we can sort this out.");
           return;
         }
 
@@ -106,7 +106,7 @@ function PaymentForm({ clientSecret, bookingId, amount, onSuccess, bookingDetail
       }
     } catch (err) {
       console.error('Payment error:', err);
-      setError('An unexpected error occurred');
+      setError('Something went wrong processing your payment — please try again.');
     } finally {
       setProcessing(false);
     }
@@ -202,7 +202,7 @@ export default function PaymentPage() {
   useEffect(() => {
     async function initializePayment() {
       if (!bookingId) {
-        setError('No booking ID provided');
+        setError("We couldn't find that booking.");
         return;
       }
 
@@ -221,7 +221,7 @@ export default function PaymentPage() {
           .single();
 
         if (bookingError || !booking) {
-          throw new Error(bookingError?.message || 'Booking not found');
+          throw new Error(bookingError?.message || "We couldn't find that booking.");
         }
 
         setBookingDetails(booking);
@@ -265,7 +265,7 @@ export default function PaymentPage() {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to create payment intent');
+          throw new Error(errorData.error || "We couldn't start your payment — please try again.");
         }
 
         const { clientSecret, paymentIntentId } = await response.json();
@@ -285,13 +285,13 @@ export default function PaymentPage() {
 
         if (paymentError) {
           console.error('Payment record creation error:', paymentError);
-          throw new Error('Failed to create payment record');
+          throw new Error("We couldn't set up your payment — please try again.");
         }
 
         setClientSecret(clientSecret);
       } catch (err) {
         console.error('Payment initialization error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to initialize payment');
+        setError(err instanceof Error ? err.message : "We couldn't set up your payment — please try again.");
       } finally {
         setLoading(false);
       }

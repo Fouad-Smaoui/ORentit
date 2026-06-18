@@ -23,6 +23,8 @@ export default function Checkout() {
   const [rentalData, setRentalData] = useState<RentalData | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -47,10 +49,12 @@ export default function Checkout() {
 
   const handleContinue = async () => {
     if (!rentalData) return;
+    setError('');
+    setSubmitting(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         // For non-authenticated users, store the rental data and redirect to auth
         localStorage.setItem('pendingRental', JSON.stringify(rentalData));
@@ -73,7 +77,7 @@ export default function Checkout() {
         .single();
 
       if (insertError) throw insertError;
-      if (!booking) throw new Error('Failed to create booking');
+      if (!booking) throw new Error("We couldn't create your booking — please try again.");
 
       // Clear the pending rental data
       localStorage.removeItem('pendingRental');
@@ -82,17 +86,27 @@ export default function Checkout() {
       navigate(`/payment/${booking.id}`, {
         state: { amount: booking.total_price }
       });
-    } catch (error) {
-      console.error('Error creating booking:', error);
+    } catch (err) {
+      console.error('Error creating booking:', err);
+      setError(err instanceof Error ? err.message : "We couldn't create your booking — please try again.");
+      setSubmitting(false);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (!rentalData) {
-    return <div>No rental data found</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Taking you back — that booking session has expired.</p>
+      </div>
+    );
   }
 
   const days = Math.ceil(
@@ -164,13 +178,20 @@ export default function Checkout() {
                 </div>
               )}
 
+              {error && (
+                <div className="bg-red-50 border-l-4 border-red-400 p-4 text-red-700">
+                  {error}
+                </div>
+              )}
+
               {/* Continue Button */}
               {isAuthenticated && (
                 <Button
                   onClick={handleContinue}
-                  className="w-full bg-[#a100ff] hover:bg-opacity-90 text-white"
+                  disabled={submitting}
+                  className="w-full bg-[#a100ff] hover:bg-opacity-90 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Proceed to Payment
+                  {submitting ? 'Setting up your booking...' : 'Proceed to Payment'}
                 </Button>
               )}
             </div>
