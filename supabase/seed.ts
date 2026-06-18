@@ -124,9 +124,19 @@ async function seedItems() {
       throw new Error('No profiles found to associate items with');
     }
 
+    // Give every seeded item a real, bookable availability window -- a
+    // null start/end date makes the booking calendar fall back to the
+    // Unix epoch (new Date(null) === Jan 1 1970).
+    const today = new Date();
+    const sixMonthsOut = new Date();
+    sixMonthsOut.setDate(sixMonthsOut.getDate() + 180);
+    const toDateOnly = (d: Date) => d.toISOString().split('T')[0];
+
     // Create items and associate them with random profiles
     const items = testItems.map(item => ({
       ...item,
+      start_date: toDateOnly(today),
+      end_date: toDateOnly(sixMonthsOut),
       owner_id: profiles[Math.floor(Math.random() * profiles.length)].id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()

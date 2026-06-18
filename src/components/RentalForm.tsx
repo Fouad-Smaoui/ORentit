@@ -22,19 +22,42 @@ interface RentalFormProps {
   itemName: string;
 }
 
-export function RentalForm({ 
-  itemId, 
-  pricePerDay, 
-  onSuccess, 
+function todayAtMidnight(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+// Listings created before availability dates existed (or with bad data) can
+// have a null/empty start or end date. new Date(null) silently resolves to
+// Jan 1 1970, which broke the calendar entirely -- always fall back to a
+// real, bookable window anchored on today instead of trusting raw input.
+function resolveAvailableDate(value: string | null | undefined, fallback: Date): Date {
+  if (!value) return fallback;
+  const parsed = new Date(value);
+  return isNaN(parsed.getTime()) ? fallback : parsed;
+}
+
+export function RentalForm({
+  itemId,
+  pricePerDay,
+  onSuccess,
   onCancel,
   availableStartDate,
   availableEndDate,
   itemName
 }: RentalFormProps) {
   const navigate = useNavigate();
+  const today = todayAtMidnight();
+  const resolvedStart = (() => {
+    const start = resolveAvailableDate(availableStartDate, today);
+    return start < today ? today : start; // never let booking start in the past
+  })();
+  const resolvedEnd = resolveAvailableDate(availableEndDate, addDays(resolvedStart, 180));
+
   const [dateRange, setDateRange] = useState<Range>({
-    startDate: new Date(availableStartDate),
-    endDate: new Date(availableStartDate),
+    startDate: resolvedStart,
+    endDate: resolvedStart,
     key: 'selection'
   });
   const [loading, setLoading] = useState(false);
@@ -54,15 +77,11 @@ export function RentalForm({
     // Clear any previous errors
     setError(null);
 
-    // Convert available dates to Date objects for comparison
-    const availableStart = new Date(availableStartDate);
-    const availableEnd = new Date(availableEndDate);
-
     // Reset time parts to midnight for accurate comparison
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(0, 0, 0, 0);
-    availableStart.setHours(0, 0, 0, 0);
-    availableEnd.setHours(0, 0, 0, 0);
+    const availableStart = resolvedStart;
+    const availableEnd = resolvedEnd;
 
     // Validate if selected dates are within available range
     if (startDate < availableStart || endDate > availableEnd) {
@@ -148,8 +167,8 @@ export function RentalForm({
         <DateRange
           ranges={[dateRange]}
           onChange={handleDateChange}
-          minDate={new Date(availableStartDate)}
-          maxDate={new Date(availableEndDate)}
+          minDate={resolvedStart}
+          maxDate={resolvedEnd}
           months={1}
           direction="vertical"
           className="w-full"
