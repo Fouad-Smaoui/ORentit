@@ -19,4 +19,59 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   height: 100%;
 }
 
+/* Dual range slider: two <input type="range"> stacked on the same track.
+   The native track is invisible and click-through (pointer-events: none);
+   only the thumb itself re-enables pointer events, so both handles stay
+   independently draggable without one blocking the other. */
+.dual-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+  margin: 0;
+  outline: none;
+}
+
+.dual-range-thumb:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #a100ff;
+  outline-offset: 2px;
+}
+
+.dual-range-thumb:focus-visible::-moz-range-thumb {
+  outline: 2px solid #a100ff;
+  outline-offset: 2px;
+}
+
+.dual-range-thumb::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+.dual-range-thumb::-moz-range-track {
+  background: transparent;
+}
+
+.dual-range-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #a100ff;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(161, 0, 255, 0.4);
+  cursor: pointer;
+}
+
+.dual-range-thumb::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #a100ff;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(161, 0, 255, 0.4);
+  cursor: pointer;
+}
+
 /* Rest of your custom styles */

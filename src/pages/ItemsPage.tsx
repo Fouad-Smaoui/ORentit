@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ItemCard from '../components/ItemCard';
 import { useSearchParams } from 'react-router-dom';
 import { getItems } from '../lib/supabase';
+import { DualRangeSlider } from '../components/ui/dual-range-slider';
 
 interface Profile {
   username: string;
@@ -28,6 +29,7 @@ export function ItemsPage() {
   const [searchParams] = useSearchParams();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
 
@@ -47,12 +49,18 @@ export function ItemsPage() {
         setError(error instanceof Error ? error.message : "We couldn't load these items — please try again.");
       } finally {
         setLoading(false);
+        setHasLoadedOnce(true);
       }
     }
     fetchItems();
   }, [searchParams, priceRange]);
 
-  if (loading) {
+  // Only replace the whole page with a skeleton on the very first load.
+  // Re-fetching after a price range tweak must not unmount the filter UI --
+  // that would yank the slider out from under the user mid-drag, and if a
+  // narrower range matches zero items, it would also remove their only way
+  // to widen the range back.
+  if (loading && !hasLoadedOnce) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4">
@@ -65,28 +73,6 @@ export function ItemsPage() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center text-red-500">
-          <p className="text-xl font-semibold">Error loading items</p>
-          <p className="mt-2">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl font-semibold text-gray-600">No items available</p>
-          <p className="mt-2 text-gray-500">Check back later for new items!</p>
         </div>
       </div>
     );
@@ -112,37 +98,27 @@ export function ItemsPage() {
             <span className="text-sm text-gray-600 mb-3">
               ${priceRange[0]} - ${priceRange[1]}
             </span>
-            <div className="w-full flex items-center gap-2">
-              <input
-                type="range"
-                min={0}
-                max={500}
-                value={priceRange[0]}
-                onChange={(e) => {
-                  const value = Math.min(Number(e.target.value), priceRange[1]);
-                  setPriceRange([value, priceRange[1]]);
-                }}
-                className="w-full accent-[#a100ff]"
-              />
-              <input
-                type="range"
-                min={0}
-                max={500}
-                value={priceRange[1]}
-                onChange={(e) => {
-                  const value = Math.max(Number(e.target.value), priceRange[0]);
-                  setPriceRange([priceRange[0], value]);
-                }}
-                className="w-full accent-[#a100ff]"
-              />
-            </div>
+            <DualRangeSlider min={0} max={500} value={priceRange} onChange={setPriceRange} />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {items.map((item) => (
-            <ItemCard key={item.id} item={item} />
-          ))}
-        </div>
+
+        {error ? (
+          <div className="text-center text-red-500 py-16">
+            <p className="text-xl font-semibold">Error loading items</p>
+            <p className="mt-2">{error}</p>
+          </div>
+        ) : items.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-xl font-semibold text-gray-600">No items match this price range</p>
+            <p className="mt-2 text-gray-500">Try widening the range above.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {items.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
