@@ -5,6 +5,7 @@ import ItemCard from '../components/ItemCard';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { useSemanticSearch } from '../hooks/useSemanticSearch';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 import SemanticSearchResults from '../components/SemanticSearchResults';
 
 // Initialize Supabase client
@@ -35,6 +36,7 @@ const Home = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const search = useSemanticSearch();
+  useLockBodyScroll(search.status !== 'idle');
 
   useEffect(() => {
     async function fetchItems() {
