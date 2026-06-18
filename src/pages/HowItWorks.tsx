@@ -1,21 +1,23 @@
 import React from 'react';
+import { Sparkles } from 'lucide-react';
 
 const steps = [
   {
     title: 'Create an Account',
-    description: 'Sign up for free and complete your profile to start renting or listing equipment.',
+    description: 'Sign up for free and set up your profile to start renting or listing items in minutes.',
   },
   {
-    title: 'Browse Equipment',
-    description: 'Search through our extensive catalog of equipment or list your own items for rent.',
+    title: 'Search Naturally',
+    description:
+      'Skip the keyword guessing. Describe what you need — "something for a beach weekend" or "gear for a snowy hike" — and our semantic AI search understands the meaning behind your words to find the best matches.',
   },
   {
     title: 'Book & Pay',
-    description: 'Select your desired dates, review the terms, and complete the secure payment process.',
+    description: 'Select your dates, review the details, and complete the secure checkout.',
   },
   {
     title: 'Enjoy & Return',
-    description: 'Use the equipment and return it in the same condition to complete your rental.',
+    description: 'Use the item, then return it as agreed to wrap up the rental.',
   },
 ];
 
@@ -26,11 +28,11 @@ const tips = [
   },
   {
     title: 'Check Availability',
-    description: 'Book early to secure your preferred dates and equipment.',
+    description: 'Book early to secure your preferred dates and items.',
   },
   {
-    title: 'Insurance Options',
-    description: 'Consider our insurance options for added peace of mind during your rental.',
+    title: 'Search Like You Would Ask a Friend',
+    description: 'The more naturally you describe what you need, the better our AI can match you — try a full sentence instead of a single keyword.',
   },
 ];
 
@@ -39,7 +41,7 @@ const HowItWorks: React.FC = () => {
     <div className="max-w-6xl mx-auto px-4 py-16">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">How It Works</h1>
-        <p className="text-xl text-gray-500">Simple steps to start renting equipment</p>
+        <p className="text-xl text-gray-500">From a simple description to your next rental</p>
       </div>
 
       <div className="flex items-center justify-between mb-12 overflow-x-auto">
@@ -65,6 +67,24 @@ const HowItWorks: React.FC = () => {
             <p className="text-gray-700">{step.description}</p>
           </div>
         ))}
+      </div>
+
+      <div className="bg-white shadow-md rounded-lg p-8 mt-8 border border-primary-100">
+        <h2 className="text-2xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <Sparkles size={22} className="text-[#a100ff]" />
+          Search That Understands You
+        </h2>
+        <p className="text-gray-700 mb-4">
+          Most rental sites make you guess the right keyword. ORentit's search is powered by AI: it reads
+          the meaning behind what you type, not just the words you used. Describe a mood, an activity, or
+          a place — "something fun for a kid's birthday party" or "gear for camping in the rain" — and
+          results are ranked by how well they actually fit your request.
+        </p>
+        <p className="text-gray-700">
+          Behind the scenes, we blend AI meaning-matching with traditional keyword search, so you get the
+          best of both: results that understand intent, and nothing relevant slips through just because it
+          was phrased differently.
+        </p>
       </div>
 
       <div className="bg-white shadow-md rounded-lg p-8 mt-8">
