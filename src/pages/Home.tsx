@@ -68,48 +68,51 @@ const Home = () => {
 
   return (
     <div>
-      {/* Hero Section */}
+      {/* Self-contained search panel — fits in the viewport below the navbar.
+          Search bar (shrink-0) + status + results (flex-1, internal scroll only)
+          so a query never requires page scroll to see its results. */}
       <div
-        className="relative h-[600px] bg-cover bg-center bg-fixed"
+        className="relative h-[calc(100vh-4rem)] flex flex-col overflow-hidden bg-cover bg-center"
         style={{
           backgroundImage: 'url("https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2021&q=80")',
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Rent Anything, <br />
-            <span className="text-primary-400">Anywhere</span>
-          </h1>
-          <p className="text-white text-xl mb-8 max-w-2xl">
-            Join our community of renters and owners. Share your items or find exactly what you need.
-          </p>
+        <div className="relative z-10 flex flex-col h-full px-4 sm:px-6 lg:px-8">
+          {/* Header + search bar — fixed at the top of the panel */}
+          <div className="flex-shrink-0 max-w-3xl mx-auto w-full text-center pt-8 sm:pt-12 pb-4">
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-3">
+              Rent Anything, <span className="text-primary-400">Anywhere</span>
+            </h1>
+            <p className="text-white text-base md:text-lg mb-6">
+              Join our community of renters and owners. Share your items or find exactly what you need.
+            </p>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="w-full max-w-2xl mb-8">
-            <div className="relative flex items-center">
-              <Search className="absolute left-6 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Describe what you're after, e.g. a relaxing beach vacation"
-                value={search.query}
-                onChange={(e) => search.setQuery(e.target.value)}
-                className="w-full pl-16 pr-32 py-4 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-[#a100ff] focus:ring-opacity-50 shadow-lg bg-white/95 backdrop-blur-sm"
-              />
-              <Button
-                type="submit"
-                className="absolute right-2 px-8 py-2.5 bg-[#a100ff] text-white rounded-full text-lg font-medium hover:bg-opacity-90 transition-all duration-200"
-              >
-                Go!
-              </Button>
-            </div>
-          </form>
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative flex items-center">
+                <Search className="absolute left-6 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  placeholder="Describe what you're after, e.g. a relaxing beach vacation"
+                  value={search.query}
+                  onChange={(e) => search.setQuery(e.target.value)}
+                  className="w-full pl-16 pr-32 py-4 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-[#a100ff] focus:ring-opacity-50 shadow-lg bg-white/95 backdrop-blur-sm"
+                />
+                <Button
+                  type="submit"
+                  className="absolute right-2 px-8 py-2.5 bg-[#a100ff] text-white rounded-full text-lg font-medium hover:bg-opacity-90 transition-all duration-200"
+                >
+                  Go!
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Status + results — fills remaining height, scrolls internally if it overflows */}
+          <div className="flex-1 min-h-0 overflow-y-auto max-w-7xl mx-auto w-full pb-6">
+            <SemanticSearchResults search={search} />
+          </div>
         </div>
-      </div>
-
-      {/* Live Search Results — same view, no navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <SemanticSearchResults search={search} />
       </div>
 
       {search.status === 'idle' && (
