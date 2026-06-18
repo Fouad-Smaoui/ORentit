@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import { ItemsPage } from './pages/ItemsPage';
 import PaymentPage from './pages/PaymentPage';
+import PaymentSuccess from './pages/PaymentSuccess';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import ResetPassword from './pages/ResetPassword';
@@ -23,9 +24,6 @@ import Privacy from './pages/Privacy';
 import Cookies from './pages/Cookies';
 import Safety from './pages/Safety';
 import { ensurePublicBucket, supabase } from './lib/supabase';
-
-// Debug log for initial render
-console.log('App component initializing');
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -70,30 +68,19 @@ const App = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    console.log('App useEffect running');
-    // Check authentication and initialize storage
     const initApp = async () => {
       try {
-        console.log('Initializing app...');
-        // Check if user is authenticated
         const { data: { session } } = await supabase.auth.getSession();
-        console.log('Auth session:', session ? 'exists' : 'none');
-        
-        // Only try to initialize storage if user is authenticated
         if (session) {
           await ensurePublicBucket();
-          console.log('Storage bucket initialized successfully');
-        } else {
-          console.log('User not authenticated, skipping storage initialization');
         }
       } catch (error) {
         console.error('Failed to initialize app:', error);
       } finally {
         setIsInitialized(true);
-        console.log('App initialization complete');
       }
     };
-    
+
     initApp();
   }, []);
 
@@ -142,6 +129,14 @@ const App = () => {
                   element={
                     <PrivateRoute>
                       <PaymentPage />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/payment-success"
+                  element={
+                    <PrivateRoute>
+                      <PaymentSuccess />
                     </PrivateRoute>
                   }
                 />

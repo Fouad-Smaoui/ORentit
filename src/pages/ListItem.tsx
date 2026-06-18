@@ -99,7 +99,6 @@ const ListItem: React.FC = () => {
 
       // Upload image
       const imageUrl = await uploadImage(imageFile);
-      console.log('Image uploaded successfully:', imageUrl);
 
       // Create item with the image URL
       const itemData = {
@@ -117,9 +116,8 @@ const ListItem: React.FC = () => {
         end_date: formData.endDate,
       };
 
-      const result = await createItem(itemData);
+      await createItem(itemData);
 
-      console.log('Item created successfully:', result);
       navigate('/dashboard');
     } catch (error) {
       console.error('Error in form submission:', error);

@@ -11,7 +11,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface Item {
   id: string;
-  user_id: string;
   owner_id: string;
   name: string;
   description: string;
@@ -27,7 +26,7 @@ export interface Item {
 }
 
 // Interface for creating a new item, which temporarily includes location coordinates
-export interface CreateItemData extends Omit<Item, 'created_at' | 'id' | 'user_id' | 'owner_id'> {
+export interface CreateItemData extends Omit<Item, 'created_at' | 'id' | 'owner_id'> {
   latitude?: number | null;
   longitude?: number | null;
 }
@@ -50,7 +49,7 @@ export const ensurePublicBucket = async () => {
     
     if (!itemsBucket) {
       // Try to create the bucket with public access
-      const { data, error } = await supabase.storage.createBucket('items', {
+      const { error } = await supabase.storage.createBucket('items', {
         public: true,
         fileSizeLimit: 5242880, // 5MB in bytes
         allowedMimeTypes: ['image/*']
@@ -61,12 +60,10 @@ export const ensurePublicBucket = async () => {
         // If bucket already exists but we don't have permission to see it,
         // we can still try to use it
         if (error.message.includes('already exists')) {
-          console.log('Bucket already exists, proceeding with upload');
           return;
         }
         throw error;
       }
-      console.log('Created items bucket:', data);
     }
   } catch (error) {
     console.error('Error ensuring items bucket exists:', error);
@@ -128,7 +125,6 @@ export const uploadImage = async (file: File): Promise<string> => {
       throw new Error('Failed to get public URL for uploaded image');
     }
 
-    console.log('Successfully uploaded image:', publicUrl);
     return publicUrl;
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -166,7 +162,6 @@ export const createItem = async (item: CreateItemData) => {
       .insert([
         {
           ...itemData, // Include all item fields except latitude/longitude
-          user_id: user.id,
           owner_id: user.id,
           status: item.status || 'available',
           created_at: new Date().toISOString()
@@ -184,7 +179,6 @@ export const createItem = async (item: CreateItemData) => {
       throw new Error('No data returned from insert operation');
     }
 
-    console.log('Successfully created item:', data);
     return data;
   } catch (error) {
     console.error('Error in createItem:', error);
@@ -268,9 +262,30 @@ export const getUserItems = async () => {
   const { data, error } = await supabase
     .from('items')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('owner_id', user.id)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
   return data;
+};
+
+export const getOwnerBookingStats = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('User not authenticated');
+
+  const { data, error } = await supabase
+    .from('bookings')
+    .select('total_price, status, items!inner(owner_id)')
+    .eq('items.owner_id', user.id);
+
+  if (error) throw error;
+
+  const bookings = data || [];
+  const totalBookings = bookings.length;
+  const pendingRequests = bookings.filter((b) => b.status === 'pending').length;
+  const revenue = bookings
+    .filter((b) => b.status === 'confirmed' || b.status === 'completed')
+    .reduce((sum, b) => sum + Number(b.total_price), 0);
+
+  return { totalBookings, pendingRequests, revenue };
 };

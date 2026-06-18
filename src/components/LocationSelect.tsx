@@ -51,8 +51,7 @@ export default function LocationSelect({ onLocationSelect, defaultValue = '', cl
     async function fetchLocations() {
       if (searchTerm.length >= 1) {
         setError(null);
-        console.log('Fetching locations for:', searchTerm);
-        
+
         try {
           const { data, error } = await supabase
             .from('locations')
@@ -66,7 +65,6 @@ export default function LocationSelect({ onLocationSelect, defaultValue = '', cl
             return;
           }
 
-          console.log('Locations fetched:', data);
           setSuggestions(data || []);
           setIsOpen(true);
         } catch (err) {

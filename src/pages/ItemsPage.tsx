@@ -1,53 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ItemCard from '../components/ItemCard';
-import { createClient } from '@supabase/supabase-js';
 import { useSearchParams } from 'react-router-dom';
 import { getItems } from '../lib/supabase';
-import Slider from '@mui/material/Slider';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-
-// Log environment variables for debugging
-console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('Supabase Anon Key:', '[REDACTED]');
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-console.log('Environment check:', {
-  hasUrl: !!supabaseUrl,
-  hasKey: !!supabaseAnonKey,
-  url: supabaseUrl
-});
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing environment variables:', {
-    url: !!supabaseUrl,
-    key: !!supabaseAnonKey
-  });
-  throw new Error('Missing Supabase environment variables');
-}
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-interface DatabaseItem {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  price_per_day: number;
-  location: string;
-  location_id: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  photos: string[];
-  owner_id: string;
-  created_at: string;
-  profiles: {
-    username: string;
-    avatar_url: string | null;
-  };
-}
 
 interface Profile {
   username: string;
@@ -70,97 +24,11 @@ interface Item {
   profiles: Profile;
 }
 
-async function insertTestData() {
-  try {
-    const testItems = [
-      {
-        name: 'Power Tools Set',
-        description: 'Complete set of power tools for home improvement',
-        category: 'tools',
-        price_per_day: 30.00,
-        location: 'Bordeaux, France',
-        photos: ['https://images.unsplash.com/photo-1581147036324-c1c78bef8855?w=800&auto=format&fit=crop'],
-        status: 'available'
-      },
-      {
-        name: 'Professional Camera',
-        description: 'DSLR camera with multiple lenses, perfect for photography',
-        category: 'electronics',
-        price_per_day: 75.00,
-        location: 'Paris, France',
-        photos: ['https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop'],
-        status: 'available'
-      },
-      {
-        name: 'Camping Tent',
-        description: '4-person tent, waterproof and easy to set up',
-        category: 'outdoor',
-        price_per_day: 25.00,
-        location: 'Lyon, France',
-        photos: ['https://images.unsplash.com/photo-1478827387698-1527781a4887?w=800&auto=format&fit=crop'],
-        status: 'available'
-      }
-    ];
-
-    console.log('Preparing to insert test items with photos:', 
-      testItems.map(item => ({
-        name: item.name,
-        photo: item.photos[0]
-      }))
-    );
-
-    // Get the first profile to use as owner
-    const { data: profiles, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .limit(1);
-
-    if (profileError) throw profileError;
-    if (!profiles || profiles.length === 0) {
-      throw new Error('No profiles found');
-    }
-
-    const owner_id = profiles[0].id;
-
-    // Delete existing items first
-    const { error: deleteError } = await supabase
-      .from('items')
-      .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000');
-
-    if (deleteError) {
-      console.error('Error deleting existing items:', deleteError);
-    }
-
-    // Insert the test items
-    const { data, error } = await supabase
-      .from('items')
-      .insert(testItems.map(item => ({
-        ...item,
-        owner_id
-      })))
-      .select();
-
-    if (error) {
-      console.error('Error inserting items:', error);
-      throw error;
-    }
-
-    console.log('Successfully inserted test items:', JSON.stringify(data, null, 2));
-    return data;
-  } catch (error) {
-    console.error('Error inserting test data:', error);
-    throw error;
-  }
-}
-
 export function ItemsPage() {
   const [searchParams] = useSearchParams();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Add state for price range
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
 
   useEffect(() => {
@@ -225,9 +93,9 @@ export function ItemsPage() {
   }
 
   const category = searchParams.get('category');
-  const categoryTitle = category ? 
-    `${category.charAt(0).toUpperCase() + category.slice(1)} for Rent` : 
-    'Available Items';
+  const categoryTitle = category
+    ? `${category.charAt(0).toUpperCase() + category.slice(1)} for Rent`
+    : 'Available Items';
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -237,64 +105,45 @@ export function ItemsPage() {
             <h1 className="text-3xl font-bold text-gray-900">{categoryTitle}</h1>
             <p className="mt-2 text-gray-600">Browse through our collection of items available for rent</p>
           </div>
-          {/* Stylish Price Range Filter */}
-          <Box
-            sx={{
-              minWidth: 180,
-              maxWidth: 220,
-              bgcolor: 'white',
-              boxShadow: 3,
-              borderRadius: 3,
-              p: 2,
-              mt: { xs: 6, md: 0 },
-              ml: { md: 6 },
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-            className="transition-shadow duration-300 hover:shadow-lg"
-          >
-            <Typography gutterBottom variant="subtitle2" sx={{ fontWeight: 600, color: '#a100ff', mb: 0.5 }}>
-              Price Range
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 1, color: '#555', fontSize: 13 }}>
+
+          {/* Price Range Filter */}
+          <div className="min-w-[180px] max-w-[260px] bg-white shadow-md rounded-xl p-4 mt-6 md:mt-0 md:ml-6 flex flex-col items-center transition-shadow hover:shadow-lg">
+            <span className="text-sm font-semibold text-[#a100ff] mb-1">Price Range</span>
+            <span className="text-sm text-gray-600 mb-3">
               ${priceRange[0]} - ${priceRange[1]}
-            </Typography>
-            <Slider
-              value={priceRange}
-              onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-              valueLabelDisplay="auto"
-              min={0}
-              max={500}
-              step={1}
-              sx={{
-                color: '#a100ff',
-                width: '90%',
-                '& .MuiSlider-thumb': {
-                  boxShadow: '0 2px 8px rgba(161,0,255,0.15)',
-                  border: '2px solid #a100ff',
-                  width: 18,
-                  height: 18,
-                },
-                '& .MuiSlider-rail': {
-                  opacity: 0.3,
-                },
-                '& .MuiSlider-track': {
-                  border: 'none',
-                },
-              }}
-            />
-          </Box>
+            </span>
+            <div className="w-full flex items-center gap-2">
+              <input
+                type="range"
+                min={0}
+                max={500}
+                value={priceRange[0]}
+                onChange={(e) => {
+                  const value = Math.min(Number(e.target.value), priceRange[1]);
+                  setPriceRange([value, priceRange[1]]);
+                }}
+                className="w-full accent-[#a100ff]"
+              />
+              <input
+                type="range"
+                min={0}
+                max={500}
+                value={priceRange[1]}
+                onChange={(e) => {
+                  const value = Math.max(Number(e.target.value), priceRange[0]);
+                  setPriceRange([priceRange[0], value]);
+                }}
+                className="w-full accent-[#a100ff]"
+              />
+            </div>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {items.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-            />
+            <ItemCard key={item.id} item={item} />
           ))}
         </div>
       </div>
     </div>
   );
-} 
+}

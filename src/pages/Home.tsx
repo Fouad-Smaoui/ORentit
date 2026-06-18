@@ -5,10 +5,6 @@ import ItemCard from '../components/ItemCard';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 
-// Debug logs for environment variables
-console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
-
 // Initialize Supabase client
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -34,17 +30,14 @@ interface Item {
 }
 
 const Home = () => {
-  console.log('Home component rendering');
   const navigate = useNavigate();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    console.log('useEffect running');
     async function fetchItems() {
       try {
-        console.log('Fetching items...');
         const { data, error } = await supabase
           .from('items')
           .select('*, profiles(username, avatar_url)')
@@ -55,8 +48,7 @@ const Home = () => {
           console.error('Error fetching items:', error);
           return;
         }
-        
-        console.log('Items fetched:', data);
+
         setItems(data || []);
       } catch (err) {
         console.error('Error:', err);
@@ -67,8 +59,6 @@ const Home = () => {
 
     fetchItems();
   }, []);
-
-  console.log('Current state - loading:', loading, 'items:', items);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -10,7 +10,7 @@ import {
   Search,
   Plus
 } from 'lucide-react';
-import { getUserItems } from '../lib/supabase';
+import { getUserItems, getOwnerBookingStats } from '../lib/supabase';
 
 interface UserItem {
   id: string;
@@ -45,21 +45,26 @@ const Dashboard: React.FC = () => {
   const [userItems, setUserItems] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [stats, setStats] = useState({ totalBookings: 0, pendingRequests: 0, revenue: 0 });
 
   useEffect(() => {
-    const fetchUserItems = async () => {
+    const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const items = await getUserItems();
+        const [items, bookingStats] = await Promise.all([
+          getUserItems(),
+          getOwnerBookingStats(),
+        ]);
         setUserItems(items || []);
+        setStats(bookingStats);
       } catch (error) {
-        console.error('Error fetching user items:', error);
+        console.error('Error fetching dashboard data:', error);
         setUserItems([]);
       } finally {
         setLoading(false);
       }
     };
-    fetchUserItems();
+    fetchDashboardData();
   }, []);
 
   return (
@@ -161,19 +166,19 @@ const Dashboard: React.FC = () => {
             />
             <StatCard
               title="Total Bookings"
-              value="-"
+              value={stats.totalBookings}
               change=""
               isPositive={true}
             />
             <StatCard
               title="Revenue"
-              value="-"
+              value={`$${stats.revenue.toFixed(2)}`}
               change=""
               isPositive={true}
             />
             <StatCard
               title="Pending Requests"
-              value="-"
+              value={stats.pendingRequests}
               change=""
               isPositive={false}
             />

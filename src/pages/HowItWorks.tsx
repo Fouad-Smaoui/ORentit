@@ -1,95 +1,85 @@
 import React from 'react';
-import { Container, Typography, Box, Grid, Paper, Step, Stepper, StepLabel } from '@mui/material';
+
+const steps = [
+  {
+    title: 'Create an Account',
+    description: 'Sign up for free and complete your profile to start renting or listing equipment.',
+  },
+  {
+    title: 'Browse Equipment',
+    description: 'Search through our extensive catalog of equipment or list your own items for rent.',
+  },
+  {
+    title: 'Book & Pay',
+    description: 'Select your desired dates, review the terms, and complete the secure payment process.',
+  },
+  {
+    title: 'Enjoy & Return',
+    description: 'Use the equipment and return it in the same condition to complete your rental.',
+  },
+];
+
+const tips = [
+  {
+    title: 'Read Reviews',
+    description: 'Check ratings and reviews from other users to ensure quality and reliability.',
+  },
+  {
+    title: 'Check Availability',
+    description: 'Book early to secure your preferred dates and equipment.',
+  },
+  {
+    title: 'Insurance Options',
+    description: 'Consider our insurance options for added peace of mind during your rental.',
+  },
+];
 
 const HowItWorks: React.FC = () => {
-  const steps = [
-    {
-      title: 'Create an Account',
-      description: 'Sign up for free and complete your profile to start renting or listing equipment.'
-    },
-    {
-      title: 'Browse Equipment',
-      description: 'Search through our extensive catalog of equipment or list your own items for rent.'
-    },
-    {
-      title: 'Book & Pay',
-      description: 'Select your desired dates, review the terms, and complete the secure payment process.'
-    },
-    {
-      title: 'Enjoy & Return',
-      description: 'Use the equipment and return it in the same condition to complete your rental.'
-    }
-  ];
-
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box textAlign="center" mb={6}>
-        <Typography variant="h2" component="h1" gutterBottom>
-          How It Works
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          Simple steps to start renting equipment
-        </Typography>
-      </Box>
+    <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">How It Works</h1>
+        <p className="text-xl text-gray-500">Simple steps to start renting equipment</p>
+      </div>
 
-      <Stepper alternativeLabel sx={{ mb: 8 }}>
+      <div className="flex items-center justify-between mb-12 overflow-x-auto">
         {steps.map((step, index) => (
-          <Step key={index}>
-            <StepLabel>{step.title}</StepLabel>
-          </Step>
+          <div key={step.title} className="flex items-center flex-1 min-w-[120px]">
+            <div className="flex flex-col items-center text-center flex-1">
+              <div className="w-10 h-10 rounded-full bg-[#a100ff] text-white flex items-center justify-center font-semibold mb-2">
+                {index + 1}
+              </div>
+              <span className="text-sm font-medium text-gray-700">{step.title}</span>
+            </div>
+            {index < steps.length - 1 && (
+              <div className="flex-1 h-0.5 bg-gray-200 mx-2 hidden sm:block" />
+            )}
+          </div>
         ))}
-      </Stepper>
+      </div>
 
-      <Grid container spacing={4}>
-        {steps.map((step, index) => (
-          <Grid item xs={12} md={6} key={index}>
-            <Paper elevation={3} sx={{ p: 4, height: '100%' }}>
-              <Typography variant="h4" gutterBottom>
-                {step.title}
-              </Typography>
-              <Typography paragraph>
-                {step.description}
-              </Typography>
-            </Paper>
-          </Grid>
+      <div className="grid md:grid-cols-2 gap-6">
+        {steps.map((step) => (
+          <div key={step.title} className="bg-white shadow-md rounded-lg p-8 h-full">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">{step.title}</h2>
+            <p className="text-gray-700">{step.description}</p>
+          </div>
         ))}
-      </Grid>
+      </div>
 
-      <Box mt={8}>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h4" gutterBottom>
-            Tips for a Great Experience
-          </Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Read Reviews
-              </Typography>
-              <Typography>
-                Check ratings and reviews from other users to ensure quality and reliability.
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Check Availability
-              </Typography>
-              <Typography>
-                Book early to secure your preferred dates and equipment.
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Insurance Options
-              </Typography>
-              <Typography>
-                Consider our insurance options for added peace of mind during your rental.
-              </Typography>
-            </Grid>
-          </Grid>
-        </Paper>
-      </Box>
-    </Container>
+      <div className="bg-white shadow-md rounded-lg p-8 mt-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Tips for a Great Experience</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {tips.map((tip) => (
+            <div key={tip.title}>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{tip.title}</h3>
+              <p className="text-gray-700">{tip.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default HowItWorks; 
+export default HowItWorks;

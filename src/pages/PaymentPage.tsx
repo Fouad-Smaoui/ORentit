@@ -131,7 +131,7 @@ function PaymentForm({ clientSecret, bookingId, amount, onSuccess, bookingDetail
           <div className="space-y-4">
             <div className="flex justify-between">
               <span>Item:</span>
-              <span>{bookingDetails.items.title}</span>
+              <span>{bookingDetails.items.name}</span>
             </div>
             <div className="flex justify-between">
               <span>Dates:</span>
@@ -213,7 +213,7 @@ export default function PaymentPage() {
           .select(`
             *,
             items (
-              title,
+              name,
               price_per_day
             )
           `)
@@ -233,7 +233,7 @@ export default function PaymentPage() {
           localStorage.setItem('pendingPayment', JSON.stringify({
             bookingId,
             amount: booking.total_price,
-            itemTitle: booking.items.title,
+            itemName: booking.items.name,
             startDate: booking.start_date,
             endDate: booking.end_date
           }));

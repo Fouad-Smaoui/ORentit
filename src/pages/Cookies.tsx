@@ -1,114 +1,94 @@
 import React from 'react';
-import { Container, Typography, Box, Paper } from '@mui/material';
+
+const sections = [
+  {
+    title: '1. What Are Cookies',
+    body: 'Cookies are small text files that are placed on your computer or mobile device when you visit our website. They help us make your experience better by remembering your preferences and providing essential functionality.',
+  },
+  {
+    title: '2. Types of Cookies We Use',
+    body: 'We use different types of cookies for various purposes:',
+    list: [
+      'Essential Cookies: Required for basic website functionality and security',
+      'Functional Cookies: Remember your preferences and settings',
+      'Analytics Cookies: Help us understand how visitors use our website',
+      'Marketing Cookies: Used to deliver relevant advertisements',
+    ],
+  },
+  {
+    title: '3. How We Use Cookies',
+    body: 'We use cookies to:',
+    list: [
+      'Keep you signed in',
+      'Remember your preferences',
+      'Understand how you use our website',
+      'Improve our services',
+      'Provide personalized content',
+      'Ensure security and prevent fraud',
+    ],
+  },
+  {
+    title: '4. Third-Party Cookies',
+    body: 'Some cookies are placed by third-party services that appear on our pages. These include:',
+    list: [
+      'Analytics providers (e.g., Google Analytics)',
+      'Payment processors',
+      'Social media platforms',
+      'Advertising networks',
+    ],
+  },
+  {
+    title: '5. Managing Cookies',
+    body: 'You can control and manage cookies in various ways:',
+    list: [
+      'Browser settings: Most browsers allow you to view and delete cookies',
+      'Cookie consent: We provide options to accept or decline non-essential cookies',
+      'Third-party opt-outs: Many third-party services provide opt-out mechanisms',
+    ],
+  },
+  {
+    title: '6. Cookie Duration',
+    body: 'Cookies can remain on your device for different periods:',
+    list: [
+      'Session cookies: Deleted when you close your browser',
+      'Persistent cookies: Remain until they expire or are deleted',
+    ],
+  },
+  {
+    title: '7. Updates to This Policy',
+    body: 'We may update this cookies policy from time to time. Any changes will be posted on this page with an updated revision date.',
+  },
+  {
+    title: '8. Contact Us',
+    body: 'If you have questions about our use of cookies, please contact us at privacy@orentit.com',
+  },
+];
 
 const Cookies: React.FC = () => {
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box textAlign="center" mb={6}>
-        <Typography variant="h2" component="h1" gutterBottom>
-          Cookies Policy
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          Last updated: {new Date().toLocaleDateString()}
-        </Typography>
-      </Box>
+    <div className="max-w-5xl mx-auto px-4 py-16">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Cookies Policy</h1>
+        <p className="text-xl text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
+      </div>
 
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          1. What Are Cookies
-        </Typography>
-        <Typography paragraph>
-          Cookies are small text files that are placed on your computer or mobile device when you visit our website. They help us make your experience better by remembering your preferences and providing essential functionality.
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          2. Types of Cookies We Use
-        </Typography>
-        <Typography paragraph>
-          We use different types of cookies for various purposes:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>
-            <strong>Essential Cookies:</strong> Required for basic website functionality and security
-          </li>
-          <li>
-            <strong>Functional Cookies:</strong> Remember your preferences and settings
-          </li>
-          <li>
-            <strong>Analytics Cookies:</strong> Help us understand how visitors use our website
-          </li>
-          <li>
-            <strong>Marketing Cookies:</strong> Used to deliver relevant advertisements
-          </li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          3. How We Use Cookies
-        </Typography>
-        <Typography paragraph>
-          We use cookies to:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Keep you signed in</li>
-          <li>Remember your preferences</li>
-          <li>Understand how you use our website</li>
-          <li>Improve our services</li>
-          <li>Provide personalized content</li>
-          <li>Ensure security and prevent fraud</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          4. Third-Party Cookies
-        </Typography>
-        <Typography paragraph>
-          Some cookies are placed by third-party services that appear on our pages. These include:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Analytics providers (e.g., Google Analytics)</li>
-          <li>Payment processors</li>
-          <li>Social media platforms</li>
-          <li>Advertising networks</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          5. Managing Cookies
-        </Typography>
-        <Typography paragraph>
-          You can control and manage cookies in various ways:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Browser settings: Most browsers allow you to view and delete cookies</li>
-          <li>Cookie consent: We provide options to accept or decline non-essential cookies</li>
-          <li>Third-party opt-outs: Many third-party services provide opt-out mechanisms</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          6. Cookie Duration
-        </Typography>
-        <Typography paragraph>
-          Cookies can remain on your device for different periods:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Session cookies: Deleted when you close your browser</li>
-          <li>Persistent cookies: Remain until they expire or are deleted</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          7. Updates to This Policy
-        </Typography>
-        <Typography paragraph>
-          We may update this cookies policy from time to time. Any changes will be posted on this page with an updated revision date.
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          8. Contact Us
-        </Typography>
-        <Typography paragraph>
-          If you have questions about our use of cookies, please contact us at privacy@orentit.com
-        </Typography>
-      </Paper>
-    </Container>
+      <div className="bg-white shadow-md rounded-lg p-8">
+        {sections.map((section, index) => (
+          <div key={section.title} className={index > 0 ? 'mt-8' : ''}>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">{section.title}</h2>
+            <p className="text-gray-700 mb-2">{section.body}</p>
+            {section.list && (
+              <ul className="list-disc pl-8 text-gray-700 space-y-1">
+                {section.list.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default Cookies; 
+export default Cookies;

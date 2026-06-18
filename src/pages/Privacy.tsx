@@ -1,117 +1,99 @@
 import React from 'react';
-import { Container, Typography, Box, Paper } from '@mui/material';
+
+const sections = [
+  {
+    title: '1. Information We Collect',
+    body: 'We collect information that you provide directly to us, including:',
+    list: [
+      'Account information (name, email, phone number)',
+      'Payment information',
+      'Equipment listings and rental history',
+      'Communications with other users',
+      'Profile information and preferences',
+    ],
+  },
+  {
+    title: '2. How We Use Your Information',
+    body: 'We use the collected information to:',
+    list: [
+      'Provide and maintain our services',
+      'Process transactions and manage your account',
+      'Communicate with you about our services',
+      'Improve and personalize your experience',
+      'Ensure platform security and prevent fraud',
+    ],
+  },
+  {
+    title: '3. Information Sharing',
+    body: 'We may share your information with:',
+    list: [
+      'Other users (as necessary for the rental process)',
+      'Service providers and business partners',
+      'Legal authorities when required by law',
+    ],
+  },
+  {
+    title: '4. Data Security',
+    body: 'We implement appropriate security measures to protect your personal information. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.',
+  },
+  {
+    title: '5. Your Rights',
+    body: 'You have the right to:',
+    list: [
+      'Access your personal information',
+      'Correct inaccurate data',
+      'Request deletion of your data',
+      'Opt-out of marketing communications',
+      'Export your data',
+    ],
+  },
+  {
+    title: '6. Cookies and Tracking',
+    body: 'We use cookies and similar tracking technologies to improve your browsing experience and analyze website traffic. You can control cookie settings through your browser preferences.',
+  },
+  {
+    title: "7. Children's Privacy",
+    body: 'Our services are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13.',
+  },
+  {
+    title: '8. International Data Transfers',
+    body: 'Your information may be transferred to and processed in countries other than your country of residence. We ensure appropriate safeguards are in place for such transfers.',
+  },
+  {
+    title: '9. Changes to Privacy Policy',
+    body: 'We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.',
+  },
+  {
+    title: '10. Contact Us',
+    body: 'If you have questions about this Privacy Policy, please contact us at privacy@orentit.com',
+  },
+];
 
 const Privacy: React.FC = () => {
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box textAlign="center" mb={6}>
-        <Typography variant="h2" component="h1" gutterBottom>
-          Privacy Policy
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          Last updated: {new Date().toLocaleDateString()}
-        </Typography>
-      </Box>
+    <div className="max-w-5xl mx-auto px-4 py-16">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Privacy Policy</h1>
+        <p className="text-xl text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
+      </div>
 
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          1. Information We Collect
-        </Typography>
-        <Typography paragraph>
-          We collect information that you provide directly to us, including:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Account information (name, email, phone number)</li>
-          <li>Payment information</li>
-          <li>Equipment listings and rental history</li>
-          <li>Communications with other users</li>
-          <li>Profile information and preferences</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          2. How We Use Your Information
-        </Typography>
-        <Typography paragraph>
-          We use the collected information to:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Provide and maintain our services</li>
-          <li>Process transactions and manage your account</li>
-          <li>Communicate with you about our services</li>
-          <li>Improve and personalize your experience</li>
-          <li>Ensure platform security and prevent fraud</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          3. Information Sharing
-        </Typography>
-        <Typography paragraph>
-          We may share your information with:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Other users (as necessary for the rental process)</li>
-          <li>Service providers and business partners</li>
-          <li>Legal authorities when required by law</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          4. Data Security
-        </Typography>
-        <Typography paragraph>
-          We implement appropriate security measures to protect your personal information. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          5. Your Rights
-        </Typography>
-        <Typography paragraph>
-          You have the right to:
-        </Typography>
-        <Typography component="ul" sx={{ pl: 4 }}>
-          <li>Access your personal information</li>
-          <li>Correct inaccurate data</li>
-          <li>Request deletion of your data</li>
-          <li>Opt-out of marketing communications</li>
-          <li>Export your data</li>
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          6. Cookies and Tracking
-        </Typography>
-        <Typography paragraph>
-          We use cookies and similar tracking technologies to improve your browsing experience and analyze website traffic. You can control cookie settings through your browser preferences.
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          7. Children's Privacy
-        </Typography>
-        <Typography paragraph>
-          Our services are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13.
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          8. International Data Transfers
-        </Typography>
-        <Typography paragraph>
-          Your information may be transferred to and processed in countries other than your country of residence. We ensure appropriate safeguards are in place for such transfers.
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          9. Changes to Privacy Policy
-        </Typography>
-        <Typography paragraph>
-          We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.
-        </Typography>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
-          10. Contact Us
-        </Typography>
-        <Typography paragraph>
-          If you have questions about this Privacy Policy, please contact us at privacy@orentit.com
-        </Typography>
-      </Paper>
-    </Container>
+      <div className="bg-white shadow-md rounded-lg p-8">
+        {sections.map((section, index) => (
+          <div key={section.title} className={index > 0 ? 'mt-8' : ''}>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">{section.title}</h2>
+            <p className="text-gray-700 mb-2">{section.body}</p>
+            {section.list && (
+              <ul className="list-disc pl-8 text-gray-700 space-y-1">
+                {section.list.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default Privacy; 
+export default Privacy;

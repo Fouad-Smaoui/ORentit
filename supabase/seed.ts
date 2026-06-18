@@ -1,6 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Load environment variables
 config({ path: path.join(__dirname, '..', '.env') });
@@ -88,7 +91,7 @@ async function seedItems() {
     // Create items and associate them with random profiles
     const items = testItems.map(item => ({
       ...item,
-      user_id: profiles[Math.floor(Math.random() * profiles.length)].id,
+      owner_id: profiles[Math.floor(Math.random() * profiles.length)].id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }));
