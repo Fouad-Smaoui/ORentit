@@ -39,7 +39,14 @@ export default function Checkout() {
       return;
     }
 
-    setRentalData(JSON.parse(storedRental));
+    try {
+      setRentalData(JSON.parse(storedRental));
+    } catch (err) {
+      console.error('Error parsing pending rental:', err);
+      localStorage.removeItem('pendingRental');
+      navigate('/');
+      return;
+    }
     checkAuth();
   }, [navigate]);
 

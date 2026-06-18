@@ -28,22 +28,44 @@ export default function Auth() {
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: { data: { username: username.trim() || undefined } },
         });
         if (error) throw error;
+
+        if (!data.session) {
+          // Email confirmation is required -- there's no active session yet,
+          // so navigating as if signed in would just look like a silent failure.
+          setSuccess('Check your email to confirm your account before signing in.');
+          setLoading(false);
+          return;
+        }
       }
 
       // Check for pending actions after successful authentication
-      const pendingPayment = localStorage.getItem('pendingPayment');
-      const pendingRental = localStorage.getItem('pendingRental');
-      const pendingItem = localStorage.getItem('pendingItem');
-      
+      let pendingPayment: string | null = null;
+      let pendingRental: string | null = null;
+      let pendingItem: string | null = null;
+      try {
+        pendingPayment = localStorage.getItem('pendingPayment');
+        pendingRental = localStorage.getItem('pendingRental');
+        pendingItem = localStorage.getItem('pendingItem');
+      } catch (storageErr) {
+        console.error('Error reading pending action from storage:', storageErr);
+      }
+
       if (pendingPayment) {
-        const { bookingId } = JSON.parse(pendingPayment);
-        localStorage.removeItem('pendingPayment');
-        navigate(`/payment/${bookingId}`);
+        try {
+          const { bookingId } = JSON.parse(pendingPayment);
+          localStorage.removeItem('pendingPayment');
+          navigate(`/payment/${bookingId}`);
+        } catch (parseErr) {
+          console.error('Error parsing pending payment:', parseErr);
+          localStorage.removeItem('pendingPayment');
+          navigate('/');
+        }
       } else if (pendingRental) {
         localStorage.removeItem('pendingRental');
         navigate('/checkout');

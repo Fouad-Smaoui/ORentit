@@ -288,7 +288,7 @@ const ListItem: React.FC = () => {
               />
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
-            <p className="mt-1 text-sm text-gray-500">{formatDate(formData.startDate)}</p>
+            {formData.startDate && <p className="mt-1 text-sm text-gray-500">{formatDate(formData.startDate)}</p>}
           </div>
 
           <div>
@@ -307,7 +307,7 @@ const ListItem: React.FC = () => {
               />
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
-            <p className="mt-1 text-sm text-gray-500">{formatDate(formData.endDate)}</p>
+            {formData.endDate && <p className="mt-1 text-sm text-gray-500">{formatDate(formData.endDate)}</p>}
           </div>
         </div>
 
